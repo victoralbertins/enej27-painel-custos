@@ -319,6 +319,13 @@ main{max-width:1180px;margin:-30px auto 0;padding:0 24px;position:relative;z-ind
 .book-window.warn{border-left-color:var(--yellow);}
 .book-window b{color:var(--yellow);font-weight:600;}
 
+.fare-real{color:var(--green-bright);font-weight:600;}
+.fare-est{color:var(--on-navy-muted);}
+.ticket-nota{
+  grid-column:1/-1;position:relative;z-index:1;
+  background:rgba(255,196,45,.14);border-top:1px solid rgba(255,196,45,.4);
+  color:var(--on-navy);font-size:12.5px;line-height:1.5;padding:12px 22px;
+}
 .ticket-empty{
   border-radius:var(--radius);background:var(--navy);color:var(--on-navy);
   padding:26px 24px;font-size:14px;line-height:1.6;box-shadow:var(--shadow-navy);
@@ -440,6 +447,17 @@ main{max-width:1180px;margin:-30px auto 0;padding:0 24px;position:relative;z-ind
 /* memoria de calculo: a conta que gerou o numero da direita */
 .line-math{
   font-family:var(--font-mono);font-size:10.5px;line-height:1.5;color:var(--muted);
+}
+.selo{
+  display:inline-block;font-family:var(--font-body);font-size:9.5px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;padding:2px 6px;border-radius:5px;
+  margin-right:5px;white-space:nowrap;vertical-align:1px;
+}
+.selo.real{background:var(--green-soft);color:var(--green);}
+.selo.est{background:var(--warn-soft);color:var(--warn);}
+.line-nota{
+  display:block;font-family:var(--font-body);font-size:11px;line-height:1.45;
+  color:var(--warn);background:var(--warn-soft);border-radius:7px;padding:6px 9px;margin-top:2px;
 }
 .line-src{
   color:var(--blue);text-decoration:none;font-weight:600;
@@ -803,82 +821,411 @@ async function loadDynamicData(){
 }
 
 /**
- * Payload simulado - espelha exatamente o JSON que seu backend deve devolver.
- * Use este objeto como especificacao da sua query no BigQuery.
- * Tarifas em BRL, ida e volta, com 8+ semanas de antecedência, destino REC.
+ * Fallback usado quando o fetch em API_ENDPOINT falha (rede fora, endpoint
+ * errado, timeout). O payload abaixo e uma copia EXATA do JSON servido pela
+ * API — tools/gerar_cotacoes.py escreve os dois no mesmo passo, entao eles
+ * nunca divergem. Nao edite o bloco a mao: rode o script.
  */
+/* >>> FALLBACK-INICIO — gerado por tools/gerar_cotacoes.py, não edite à mão */
+const FALLBACK_PAYLOAD = {
+  "meta": {
+    "moeda": "BRL",
+    "destino": "REC",
+    "evento": "ENEJ 27",
+    "atualizado_em": "2026-09-15",
+    "fonte": "tools/gerar_cotacoes.py",
+    "calibracao": {
+      "fator": 1.5184,
+      "observacoes": 1,
+      "ufs": [
+        "SP"
+      ],
+      "hospedagem_conferida": false
+    }
+  },
+  "voos": [
+    {
+      "uf": "AC",
+      "capital": "Rio Branco",
+      "iata": "RBR",
+      "searchIata": "RBR",
+      "regiao": "Norte",
+      "low": 2187,
+      "high": 3553,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "AP",
+      "capital": "Macapá",
+      "iata": "MCP",
+      "searchIata": "MCP",
+      "regiao": "Norte",
+      "low": 1579,
+      "high": 2566,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "AM",
+      "capital": "Manaus",
+      "iata": "MAO",
+      "searchIata": "MAO",
+      "regiao": "Norte",
+      "low": 1670,
+      "high": 2714,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "PA",
+      "capital": "Belém",
+      "iata": "BEL",
+      "searchIata": "BEL",
+      "regiao": "Norte",
+      "low": 1093,
+      "high": 1777,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "RO",
+      "capital": "Porto Velho",
+      "iata": "PVH",
+      "searchIata": "PVH",
+      "regiao": "Norte",
+      "low": 1944,
+      "high": 3158,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "RR",
+      "capital": "Boa Vista",
+      "iata": "BVB",
+      "searchIata": "BVB",
+      "regiao": "Norte",
+      "low": 2065,
+      "high": 3356,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "TO",
+      "capital": "Palmas",
+      "iata": "PMW",
+      "searchIata": "PMW",
+      "regiao": "Norte",
+      "low": 1306,
+      "high": 2122,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "AL",
+      "capital": "Maceió",
+      "iata": "MCZ",
+      "searchIata": "MCZ",
+      "regiao": "Nordeste",
+      "low": 607,
+      "high": 987,
+      "origem": "estimado",
+      "host": false,
+      "nota": "Maceió fica a 260 km: ônibus leva ~4h por ~R$ 90 ida e volta, bem abaixo do voo."
+    },
+    {
+      "uf": "BA",
+      "capital": "Salvador",
+      "iata": "SSA",
+      "searchIata": "SSA",
+      "regiao": "Nordeste",
+      "low": 753,
+      "high": 1224,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "CE",
+      "capital": "Fortaleza",
+      "iata": "FOR",
+      "searchIata": "FOR",
+      "regiao": "Nordeste",
+      "low": 711,
+      "high": 1155,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "MA",
+      "capital": "São Luís",
+      "iata": "SLZ",
+      "searchIata": "SLZ",
+      "regiao": "Nordeste",
+      "low": 923,
+      "high": 1500,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "PB",
+      "capital": "João Pessoa",
+      "iata": "JPA",
+      "searchIata": "JPA",
+      "regiao": "Nordeste",
+      "low": 565,
+      "high": 918,
+      "origem": "estimado",
+      "host": false,
+      "nota": "João Pessoa fica a 120 km: ônibus leva ~2h por ~R$ 45 ida e volta. Voar raramente compensa."
+    },
+    {
+      "uf": "PE",
+      "capital": "Recife",
+      "iata": "REC",
+      "searchIata": "REC",
+      "regiao": "Nordeste",
+      "low": 0,
+      "high": 0,
+      "origem": "anfitriã",
+      "host": true
+    },
+    {
+      "uf": "PI",
+      "capital": "Teresina",
+      "iata": "THE",
+      "searchIata": "THE",
+      "regiao": "Nordeste",
+      "low": 850,
+      "high": 1382,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "RN",
+      "capital": "Natal",
+      "iata": "NAT",
+      "searchIata": "NAT",
+      "regiao": "Nordeste",
+      "low": 607,
+      "high": 987,
+      "origem": "estimado",
+      "host": false,
+      "nota": "Natal fica a 300 km: ônibus leva ~4h30 por ~R$ 110 ida e volta."
+    },
+    {
+      "uf": "SE",
+      "capital": "Aracaju",
+      "iata": "AJU",
+      "searchIata": "AJU",
+      "regiao": "Nordeste",
+      "low": 674,
+      "high": 1096,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "DF",
+      "capital": "Brasília",
+      "iata": "BSB",
+      "searchIata": "BSB",
+      "regiao": "Centro-Oeste",
+      "low": 972,
+      "high": 1579,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "GO",
+      "capital": "Goiânia",
+      "iata": "GYN",
+      "searchIata": "GYN",
+      "regiao": "Centro-Oeste",
+      "low": 1142,
+      "high": 1856,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "MT",
+      "capital": "Cuiabá",
+      "iata": "CGB",
+      "searchIata": "CGB",
+      "regiao": "Centro-Oeste",
+      "low": 1397,
+      "high": 2270,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "MS",
+      "capital": "Campo Grande",
+      "iata": "CGR",
+      "searchIata": "CGR",
+      "regiao": "Centro-Oeste",
+      "low": 1446,
+      "high": 2349,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "ES",
+      "capital": "Vitória",
+      "iata": "VIX",
+      "searchIata": "VIX",
+      "regiao": "Sudeste",
+      "low": 1033,
+      "high": 1678,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "MG",
+      "capital": "Belo Horizonte",
+      "iata": "CNF",
+      "searchIata": "CNF",
+      "regiao": "Sudeste",
+      "low": 990,
+      "high": 1609,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "RJ",
+      "capital": "Rio de Janeiro",
+      "iata": "GIG",
+      "searchIata": "RIO",
+      "regiao": "Sudeste",
+      "low": 954,
+      "high": 1550,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "SP",
+      "capital": "São Paulo",
+      "iata": "GRU",
+      "searchIata": "SAO",
+      "regiao": "Sudeste",
+      "low": 923,
+      "high": 1500,
+      "origem": "observado",
+      "host": false,
+      "conferido": "Kayak, 2026-09-14"
+    },
+    {
+      "uf": "PR",
+      "capital": "Curitiba",
+      "iata": "CWB",
+      "searchIata": "CWB",
+      "regiao": "Sul",
+      "low": 1184,
+      "high": 1925,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "SC",
+      "capital": "Florianópolis",
+      "iata": "FLN",
+      "searchIata": "FLN",
+      "regiao": "Sul",
+      "low": 1257,
+      "high": 2043,
+      "origem": "estimado",
+      "host": false
+    },
+    {
+      "uf": "RS",
+      "capital": "Porto Alegre",
+      "iata": "POA",
+      "searchIata": "POA",
+      "regiao": "Sul",
+      "low": 1336,
+      "high": 2171,
+      "origem": "estimado",
+      "host": false
+    }
+  ],
+  "tiers": [
+    {
+      "key": "econ",
+      "name": "Econômico",
+      "desc": "Hostel compartilhado em Boa Viagem, prato feito e ônibus/metrô.",
+      "hospNight": 85,
+      "hospWhat": "cama em quarto compartilhado",
+      "hotelFilter": "ht_id%3D203",
+      "meals": {
+        "cafe": 12,
+        "almoco": 25,
+        "jantar": 23
+      },
+      "mealsWhat": "padaria, prato feito e lanche à noite",
+      "transit": {
+        "busRides": 4,
+        "busFare": 4.9,
+        "uberRides": 1,
+        "uberFare": 7.0,
+        "airportRides": 2,
+        "airportFare": 22.0
+      },
+      "transitWhat": "4 embarques de ônibus/metrô + 1 Uber noturno dividido entre 4",
+      "hospOrigem": "estimado"
+    },
+    {
+      "key": "inter",
+      "name": "Intermediário",
+      "desc": "Hotel 3 estrelas em quarto duplo, self-service e mix de ônibus e Uber.",
+      "hospNight": 145,
+      "hospWhat": "quarto duplo (~R$ 290 a diária), valor por pessoa",
+      "hotelFilter": "class%3D3",
+      "meals": {
+        "cafe": 18,
+        "almoco": 42,
+        "jantar": 35
+      },
+      "mealsWhat": "café do hotel, self-service por quilo e jantar simples",
+      "transit": {
+        "busRides": 2,
+        "busFare": 4.9,
+        "uberRides": 1,
+        "uberFare": 24.0,
+        "airportRides": 2,
+        "airportFare": 22.0
+      },
+      "transitWhat": "2 embarques de ônibus + 1 corrida de Uber por dia",
+      "hospOrigem": "estimado"
+    },
+    {
+      "key": "conforto",
+      "name": "Conforto",
+      "desc": "Hotel 4 estrelas na orla, restaurantes à la carte e Uber em todos os trajetos.",
+      "hospNight": 260,
+      "hospWhat": "4 estrelas na orla (~R$ 520 a diária), valor por pessoa",
+      "hotelFilter": "class%3D4",
+      "meals": {
+        "cafe": 30,
+        "almoco": 65,
+        "jantar": 65
+      },
+      "mealsWhat": "restaurantes à la carte no almoço e no jantar",
+      "transit": {
+        "busRides": 0,
+        "busFare": 0,
+        "uberRides": 2,
+        "uberFare": 34.0,
+        "airportRides": 2,
+        "airportFare": 26.0
+      },
+      "transitWhat": "2 corridas de Uber por dia, sem transporte público",
+      "hospOrigem": "estimado"
+    }
+  ]
+};
+/* <<< FALLBACK-FIM */
+
 function simulatedPayload(){
-  const payload = {
-    meta: { moeda:"BRL", atualizado_em:"2026-09-14", fonte:"simulado", destino:"REC" },
-    voos: [
-      // --- Norte ---
-      { uf:"AC", capital:"Rio Branco",    iata:"RBR", regiao:"Norte", low:1500, high:2100 },
-      { uf:"AP", capital:"Macapá",        iata:"MCP", regiao:"Norte", low:1100, high:1500 },
-      { uf:"AM", capital:"Manaus",        iata:"MAO", regiao:"Norte", low:1150, high:1600 },
-      { uf:"PA", capital:"Belém",         iata:"BEL", regiao:"Norte", low:750,  high:1050 },
-      { uf:"RO", capital:"Porto Velho",   iata:"PVH", regiao:"Norte", low:1350, high:1850 },
-      { uf:"RR", capital:"Boa Vista",     iata:"BVB", regiao:"Norte", low:1450, high:1950 },
-      { uf:"TO", capital:"Palmas",        iata:"PMW", regiao:"Norte", low:900,  high:1250 },
-      // --- Nordeste ---
-      { uf:"AL", capital:"Maceió",        iata:"MCZ", regiao:"Nordeste", low:380, high:620 },
-      { uf:"BA", capital:"Salvador",      iata:"SSA", regiao:"Nordeste", low:480, high:760 },
-      { uf:"CE", capital:"Fortaleza",     iata:"FOR", regiao:"Nordeste", low:450, high:720 },
-      { uf:"MA", capital:"São Luís",      iata:"SLZ", regiao:"Nordeste", low:620, high:900 },
-      { uf:"PB", capital:"João Pessoa",   iata:"JPA", regiao:"Nordeste", low:350, high:580 },
-      { uf:"PE", capital:"Recife",        iata:"REC", regiao:"Nordeste", low:0,   high:0, host:true },
-      { uf:"PI", capital:"Teresina",      iata:"THE", regiao:"Nordeste", low:560, high:840 },
-      { uf:"RN", capital:"Natal",         iata:"NAT", regiao:"Nordeste", low:380, high:620 },
-      { uf:"SE", capital:"Aracaju",       iata:"AJU", regiao:"Nordeste", low:430, high:680 },
-      // --- Centro-Oeste ---
-      { uf:"DF", capital:"Brasília",      iata:"BSB", regiao:"Centro-Oeste", low:650, high:950 },
-      { uf:"GO", capital:"Goiânia",       iata:"GYN", regiao:"Centro-Oeste", low:780, high:1100 },
-      { uf:"MT", capital:"Cuiabá",        iata:"CGB", regiao:"Centro-Oeste", low:950, high:1350 },
-      { uf:"MS", capital:"Campo Grande",  iata:"CGR", regiao:"Centro-Oeste", low:980, high:1400 },
-      // --- Sudeste ---
-      { uf:"ES", capital:"Vitória",         iata:"VIX", regiao:"Sudeste", low:700, high:1000 },
-      { uf:"MG", capital:"Belo Horizonte",  iata:"CNF", regiao:"Sudeste", low:650, high:980 },
-      { uf:"RJ", capital:"Rio de Janeiro",  iata:"GIG", searchIata:"RIO", regiao:"Sudeste", low:620, high:950 },
-      { uf:"SP", capital:"São Paulo",       iata:"GRU", searchIata:"SAO", regiao:"Sudeste", low:600, high:920 },
-      // --- Sul ---
-      { uf:"PR", capital:"Curitiba",      iata:"CWB", regiao:"Sul", low:800, high:1150 },
-      { uf:"SC", capital:"Florianópolis", iata:"FLN", regiao:"Sul", low:850, high:1220 },
-      { uf:"RS", capital:"Porto Alegre",  iata:"POA", regiao:"Sul", low:900, high:1300 }
-    ],
-    /* Os cenários são descritos por VALOR UNITÁRIO, não por total fechado.
-       Quem fecha a conta é o normalize(), multiplicando pelas noites/dias do
-       EVENT. Assim o painel consegue mostrar a memória de cálculo na tela e
-       você só precisa atualizar o preço unitário no backend.
-
-         hospNight = diária por pessoa           -> x 5 pernoites
-         meals     = 3 refeições por dia         -> x 6 dias
-         transit   = deslocamentos por dia       -> x 6 dias x fator da sede  */
-    tiers: [
-      { key:"econ", name:"Econômico", cls:"tier-econ",
-        desc:"Hostel compartilhado em Boa Viagem, prato feito e ônibus/metrô.",
-        hospNight:70,  hospWhat:"cama em quarto compartilhado", hotelFilter:"ht_id%3D203",
-        meals:{ cafe:12, almoco:25, jantar:23 }, mealsWhat:"padaria, prato feito e lanche à noite",
-        transit:{ busRides:4, busFare:4.90, uberRides:1, uberFare:7.00, airportRides:2, airportFare:22.00 },
-        transitWhat:"4 embarques de ônibus/metrô + 1 Uber noturno dividido entre 4" },
-
-      { key:"inter", name:"Intermediário", cls:"tier-inter",
-        desc:"Hotel 3 estrelas em quarto duplo, self-service e mix de ônibus e Uber.",
-        hospNight:130, hospWhat:"quarto duplo, valor por pessoa", hotelFilter:"class%3D3",
-        meals:{ cafe:18, almoco:42, jantar:35 }, mealsWhat:"café do hotel, self-service por quilo e jantar simples",
-        transit:{ busRides:2, busFare:4.90, uberRides:1, uberFare:24.00, airportRides:2, airportFare:22.00 },
-        transitWhat:"2 embarques de ônibus + 1 corrida de Uber por dia" },
-
-      { key:"conforto", name:"Conforto", cls:"tier-conforto",
-        desc:"Hotel 4 estrelas na orla, restaurantes à la carte e Uber em todos os trajetos.",
-        hospNight:250, hospWhat:"apartamento na orla de Boa Viagem", hotelFilter:"class%3D4",
-        meals:{ cafe:30, almoco:65, jantar:65 }, mealsWhat:"restaurantes à la carte no almoço e no jantar",
-        transit:{ busRides:0, busFare:0, uberRides:2, uberFare:34.00, airportRides:2, airportFare:26.00 },
-        transitWhat:"2 corridas de Uber por dia, sem transporte público" }
-    ]
-  };
-
-  // Latência simulada para o estado de carregamento aparecer de verdade.
-  // Remova o setTimeout quando plugar a API real.
-  return new Promise(resolve => setTimeout(() => resolve(payload), 900));
+  // Pequena latencia para o estado de carregamento nao piscar.
+  return new Promise(resolve => setTimeout(() => resolve(FALLBACK_PAYLOAD), 300));
 }
 
 /** Agrupa os voos por regiao e garante os campos que o render espera. */
@@ -898,7 +1245,11 @@ function normalize(json){
       searchIata: v.searchIata || v.iata || "",
       low: Number(v.low) || 0,
       high: Number(v.high) || 0,
-      host: Boolean(v.host)
+      host: Boolean(v.host),
+      // "observado" = cotacao real buscada na fonte | "estimado" = modelo calibrado
+      origem: v.origem || "estimado",
+      conferido: v.conferido || "",
+      nota: v.nota || ""
     });
   });
 
@@ -931,6 +1282,7 @@ function normalize(json){
 
         // unitários (guardados para a memória de cálculo na tela)
         hospNight:n(t.hospNight), hospWhat:t.hospWhat || "",
+        hospOrigem:t.hospOrigem || "estimado", hospConferido:t.hospConferido || "",
         hotelFilter:t.hotelFilter || "",
         meals, mealsDay, mealsWhat:t.mealsWhat || "",
         transit:tr, busDay, uberDay, transitDay, transitFixed,
@@ -991,6 +1343,17 @@ function uberUrl(venue){
   return "https://m.uber.com/ul/?action=setPickup" +
          "&pickup%5Bformatted_address%5D=" + encodeURIComponent("Boa Viagem, Recife - PE") +
          "&dropoff%5Bformatted_address%5D=" + encodeURIComponent(venue.maps || venue.name);
+}
+
+/* Distingue o que veio de cotacao real do que ainda e estimativa do modelo.
+   O usuario precisa saber em qual numero pode confiar sem conferir. */
+function selo(origem, conferido){
+  if (origem === "observado"){
+    const quando = (conferido || "").replace(/(\d{4})-(\d{2})-(\d{2})/, "$3/$2");
+    return '<span class="selo real" title="Preço buscado na fonte, não estimado">' +
+           "cotação real" + (quando ? " · " + quando : "") + "</span>";
+  }
+  return '<span class="selo est" title="Estimativa do modelo, calibrada pelas cotações reais já conferidas">estimativa</span>';
 }
 
 /* Transporte interno de um cenario numa sede:
@@ -1072,12 +1435,22 @@ function renderDataBadge(){
     curto = u.host + "/…/" + u.pathname.split("/").pop();
   } catch (e) { /* URL relativa: mantem como esta */ }
 
+  // Quantas origens tem cotacao real por tras, para o numero nao passar por
+  // mais preciso do que e.
+  const cal = (DATA && DATA.meta && DATA.meta.calibracao) || null;
+  const total = DATA ? DATA.regions.reduce((n, r) => n + r.ufs.length, 0) : 0;
+
   pill.className = "src-pill" + (live ? "" : " sim");
   pill.innerHTML = '<span class="dot"></span> fonte: ' +
     (live
       ? "API " + curto
       : "payload interno — a chamada a " + curto + " falhou") +
-    (DATA && DATA.meta && DATA.meta.atualizado_em ? " · atualizado em " + DATA.meta.atualizado_em : "");
+    (DATA && DATA.meta && DATA.meta.atualizado_em ? " · atualizado em " + DATA.meta.atualizado_em : "") +
+    (cal ? " · " + cal.observacoes + "/" + total + " origens com cotação real" +
+           (cal.fator !== 1
+              ? " · demais calibradas ×" + cal.fator.toFixed(2).replace(".", ",")
+              : "")
+         : "");
   pill.title = API_ENDPOINT;
 }
 
@@ -1258,10 +1631,16 @@ function renderTicket(){
         "<div>" +
           '<p class="fare-label">Passagem aérea &middot; ida e volta</p>' +
           '<p class="fare-value">' + fmt(mid) + "</p>" +
-          '<p class="fare-range">faixa ' + fmt(low) + " – " + fmt(high) + "</p>" +
+          '<p class="fare-range">faixa ' + fmt(low) + " – " + fmt(high) +
+            (selected.origem === "observado"
+              ? ' · <span class="fare-real">cotação real, ' + selected.conferido + "</span>"
+              : ' · <span class="fare-est">estimativa calibrada</span>') + "</p>" +
         "</div>" +
         '<p class="book-window' + windowCls + '">' + windowMsg + "</p>" +
       "</div>" +
+      (selected.nota
+        ? '<div class="ticket-nota">Atenção: ' + selected.nota + "</div>"
+        : "") +
     "</div>";
 }
 
@@ -1296,7 +1675,8 @@ function renderTiers(){
         value:fare, display: fare ? fmt(fare) : "—",
         math: selected.host
           ? "federação anfitriã — sem custo aéreo"
-          : "média da faixa " + fmt(selected.low) + "–" + fmt(selected.high) +
+          : selo(selected.origem, selected.conferido) +
+            " faixa " + fmt(selected.low) + "–" + fmt(selected.high) +
             (fareMultiplier(daysToEvent()) > 1
               ? " +" + Math.round((fareMultiplier(daysToEvent()) - 1) * 100) + "% de sazonalidade"
               : "") +
@@ -1305,7 +1685,8 @@ function renderTiers(){
 
       { key:"hosp", label:"Hospedagem (" + EVENT.nights + " noites)",
         value:tier.hosp, display: fmt(tier.hosp),
-        math: EVENT.nights + " × " + fmt(tier.hospNight) + "/noite · " + tier.hospWhat +
+        math: selo(tier.hospOrigem, tier.hospConferido) + " " +
+              EVENT.nights + " × " + fmt(tier.hospNight) + "/noite · " + tier.hospWhat +
               src(hotelsUrl(tier), "Booking") },
 
       { key:"alim", label:"Alimentação (" + EVENT.days + " dias)",

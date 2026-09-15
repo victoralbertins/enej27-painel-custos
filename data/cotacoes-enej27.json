@@ -3,8 +3,16 @@
     "moeda": "BRL",
     "destino": "REC",
     "evento": "ENEJ 27",
-    "atualizado_em": "2026-09-14",
-    "fonte": "tools/gerar_cotacoes.py"
+    "atualizado_em": "2026-09-15",
+    "fonte": "tools/gerar_cotacoes.py",
+    "calibracao": {
+      "fator": 1.5184,
+      "observacoes": 1,
+      "ufs": [
+        "SP"
+      ],
+      "hospedagem_conferida": false
+    }
   },
   "voos": [
     {
@@ -13,8 +21,9 @@
       "iata": "RBR",
       "searchIata": "RBR",
       "regiao": "Norte",
-      "low": 1500,
-      "high": 2100,
+      "low": 2187,
+      "high": 3553,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -23,8 +32,9 @@
       "iata": "MCP",
       "searchIata": "MCP",
       "regiao": "Norte",
-      "low": 1100,
-      "high": 1500,
+      "low": 1579,
+      "high": 2566,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -33,8 +43,9 @@
       "iata": "MAO",
       "searchIata": "MAO",
       "regiao": "Norte",
-      "low": 1150,
-      "high": 1600,
+      "low": 1670,
+      "high": 2714,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -43,8 +54,9 @@
       "iata": "BEL",
       "searchIata": "BEL",
       "regiao": "Norte",
-      "low": 750,
-      "high": 1050,
+      "low": 1093,
+      "high": 1777,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -53,8 +65,9 @@
       "iata": "PVH",
       "searchIata": "PVH",
       "regiao": "Norte",
-      "low": 1350,
-      "high": 1850,
+      "low": 1944,
+      "high": 3158,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -63,8 +76,9 @@
       "iata": "BVB",
       "searchIata": "BVB",
       "regiao": "Norte",
-      "low": 1450,
-      "high": 1950,
+      "low": 2065,
+      "high": 3356,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -73,8 +87,9 @@
       "iata": "PMW",
       "searchIata": "PMW",
       "regiao": "Norte",
-      "low": 900,
-      "high": 1250,
+      "low": 1306,
+      "high": 2122,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -83,9 +98,11 @@
       "iata": "MCZ",
       "searchIata": "MCZ",
       "regiao": "Nordeste",
-      "low": 380,
-      "high": 620,
-      "host": false
+      "low": 607,
+      "high": 987,
+      "origem": "estimado",
+      "host": false,
+      "nota": "Maceió fica a 260 km: ônibus leva ~4h por ~R$ 90 ida e volta, bem abaixo do voo."
     },
     {
       "uf": "BA",
@@ -93,8 +110,9 @@
       "iata": "SSA",
       "searchIata": "SSA",
       "regiao": "Nordeste",
-      "low": 480,
-      "high": 760,
+      "low": 753,
+      "high": 1224,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -103,8 +121,9 @@
       "iata": "FOR",
       "searchIata": "FOR",
       "regiao": "Nordeste",
-      "low": 450,
-      "high": 720,
+      "low": 711,
+      "high": 1155,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -113,8 +132,9 @@
       "iata": "SLZ",
       "searchIata": "SLZ",
       "regiao": "Nordeste",
-      "low": 620,
-      "high": 900,
+      "low": 923,
+      "high": 1500,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -123,9 +143,11 @@
       "iata": "JPA",
       "searchIata": "JPA",
       "regiao": "Nordeste",
-      "low": 350,
-      "high": 580,
-      "host": false
+      "low": 565,
+      "high": 918,
+      "origem": "estimado",
+      "host": false,
+      "nota": "João Pessoa fica a 120 km: ônibus leva ~2h por ~R$ 45 ida e volta. Voar raramente compensa."
     },
     {
       "uf": "PE",
@@ -135,6 +157,7 @@
       "regiao": "Nordeste",
       "low": 0,
       "high": 0,
+      "origem": "anfitriã",
       "host": true
     },
     {
@@ -143,8 +166,9 @@
       "iata": "THE",
       "searchIata": "THE",
       "regiao": "Nordeste",
-      "low": 560,
-      "high": 840,
+      "low": 850,
+      "high": 1382,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -153,9 +177,11 @@
       "iata": "NAT",
       "searchIata": "NAT",
       "regiao": "Nordeste",
-      "low": 380,
-      "high": 620,
-      "host": false
+      "low": 607,
+      "high": 987,
+      "origem": "estimado",
+      "host": false,
+      "nota": "Natal fica a 300 km: ônibus leva ~4h30 por ~R$ 110 ida e volta."
     },
     {
       "uf": "SE",
@@ -163,8 +189,9 @@
       "iata": "AJU",
       "searchIata": "AJU",
       "regiao": "Nordeste",
-      "low": 430,
-      "high": 680,
+      "low": 674,
+      "high": 1096,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -173,8 +200,9 @@
       "iata": "BSB",
       "searchIata": "BSB",
       "regiao": "Centro-Oeste",
-      "low": 650,
-      "high": 950,
+      "low": 972,
+      "high": 1579,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -183,8 +211,9 @@
       "iata": "GYN",
       "searchIata": "GYN",
       "regiao": "Centro-Oeste",
-      "low": 780,
-      "high": 1100,
+      "low": 1142,
+      "high": 1856,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -193,8 +222,9 @@
       "iata": "CGB",
       "searchIata": "CGB",
       "regiao": "Centro-Oeste",
-      "low": 950,
-      "high": 1350,
+      "low": 1397,
+      "high": 2270,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -203,8 +233,9 @@
       "iata": "CGR",
       "searchIata": "CGR",
       "regiao": "Centro-Oeste",
-      "low": 980,
-      "high": 1400,
+      "low": 1446,
+      "high": 2349,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -213,8 +244,9 @@
       "iata": "VIX",
       "searchIata": "VIX",
       "regiao": "Sudeste",
-      "low": 700,
-      "high": 1000,
+      "low": 1033,
+      "high": 1678,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -223,8 +255,9 @@
       "iata": "CNF",
       "searchIata": "CNF",
       "regiao": "Sudeste",
-      "low": 650,
-      "high": 980,
+      "low": 990,
+      "high": 1609,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -233,8 +266,9 @@
       "iata": "GIG",
       "searchIata": "RIO",
       "regiao": "Sudeste",
-      "low": 620,
-      "high": 950,
+      "low": 954,
+      "high": 1550,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -243,9 +277,11 @@
       "iata": "GRU",
       "searchIata": "SAO",
       "regiao": "Sudeste",
-      "low": 600,
-      "high": 920,
-      "host": false
+      "low": 923,
+      "high": 1500,
+      "origem": "observado",
+      "host": false,
+      "conferido": "Kayak, 2026-09-14"
     },
     {
       "uf": "PR",
@@ -253,8 +289,9 @@
       "iata": "CWB",
       "searchIata": "CWB",
       "regiao": "Sul",
-      "low": 800,
-      "high": 1150,
+      "low": 1184,
+      "high": 1925,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -263,8 +300,9 @@
       "iata": "FLN",
       "searchIata": "FLN",
       "regiao": "Sul",
-      "low": 850,
-      "high": 1220,
+      "low": 1257,
+      "high": 2043,
+      "origem": "estimado",
       "host": false
     },
     {
@@ -273,8 +311,9 @@
       "iata": "POA",
       "searchIata": "POA",
       "regiao": "Sul",
-      "low": 900,
-      "high": 1300,
+      "low": 1336,
+      "high": 2171,
+      "origem": "estimado",
       "host": false
     }
   ],
@@ -283,7 +322,7 @@
       "key": "econ",
       "name": "Econômico",
       "desc": "Hostel compartilhado em Boa Viagem, prato feito e ônibus/metrô.",
-      "hospNight": 70,
+      "hospNight": 85,
       "hospWhat": "cama em quarto compartilhado",
       "hotelFilter": "ht_id%3D203",
       "meals": {
@@ -300,14 +339,15 @@
         "airportRides": 2,
         "airportFare": 22.0
       },
-      "transitWhat": "4 embarques de ônibus/metrô + 1 Uber noturno dividido entre 4"
+      "transitWhat": "4 embarques de ônibus/metrô + 1 Uber noturno dividido entre 4",
+      "hospOrigem": "estimado"
     },
     {
       "key": "inter",
       "name": "Intermediário",
       "desc": "Hotel 3 estrelas em quarto duplo, self-service e mix de ônibus e Uber.",
-      "hospNight": 130,
-      "hospWhat": "quarto duplo, valor por pessoa",
+      "hospNight": 145,
+      "hospWhat": "quarto duplo (~R$ 290 a diária), valor por pessoa",
       "hotelFilter": "class%3D3",
       "meals": {
         "cafe": 18,
@@ -323,14 +363,15 @@
         "airportRides": 2,
         "airportFare": 22.0
       },
-      "transitWhat": "2 embarques de ônibus + 1 corrida de Uber por dia"
+      "transitWhat": "2 embarques de ônibus + 1 corrida de Uber por dia",
+      "hospOrigem": "estimado"
     },
     {
       "key": "conforto",
       "name": "Conforto",
       "desc": "Hotel 4 estrelas na orla, restaurantes à la carte e Uber em todos os trajetos.",
-      "hospNight": 250,
-      "hospWhat": "apartamento na orla de Boa Viagem",
+      "hospNight": 260,
+      "hospWhat": "4 estrelas na orla (~R$ 520 a diária), valor por pessoa",
       "hotelFilter": "class%3D4",
       "meals": {
         "cafe": 30,
@@ -346,7 +387,8 @@
         "airportRides": 2,
         "airportFare": 26.0
       },
-      "transitWhat": "2 corridas de Uber por dia, sem transporte público"
+      "transitWhat": "2 corridas de Uber por dia, sem transporte público",
+      "hospOrigem": "estimado"
     }
   ]
 }

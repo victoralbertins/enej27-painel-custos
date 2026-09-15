@@ -1,0 +1,50 @@
+name: Atualizar cotações
+
+# Busca preços reais na Amadeus e commita o JSON que o painel consome.
+# A chave fica em secrets do repositório e nunca chega ao navegador.
+on:
+  schedule:
+    - cron: "0 9 * * 1" # toda segunda, 09:00 UTC (06:00 em Recife)
+  workflow_dispatch: # permite rodar na mão pela aba Actions
+
+permissions:
+  contents: write # necessário para commitar o JSON atualizado
+
+concurrency:
+  group: cotacoes
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Sem credenciais o script sai com código 1 e o passo é pulado sem
+      # derrubar o workflow — o painel segue com as estimativas calibradas.
+      - name: Buscar cotações na Amadeus
+        continue-on-error: true
+        env:
+          AMADEUS_CLIENT_ID: ${{ secrets.AMADEUS_CLIENT_ID }}
+          AMADEUS_CLIENT_SECRET: ${{ secrets.AMADEUS_CLIENT_SECRET }}
+        run: python tools/cotacoes_amadeus.py
+
+      - name: Regerar o payload do painel
+        run: python tools/gerar_cotacoes.py
+
+      - name: Commitar se houver mudança
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/ index.html
+          if git diff --staged --quiet; then
+            echo "Nenhuma cotação mudou."
+          else
+            git commit -m "chore: atualizar cotações ($(date -u +%Y-%m-%d))"
+            git push
+            echo "Cotações atualizadas e publicadas."
+          fi

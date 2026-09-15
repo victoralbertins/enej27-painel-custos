@@ -55,10 +55,53 @@ voos = [dict(r) for r in client.query(SQL_COTACOES).result()]
 # o resto do script segue igual
 ```
 
-> **Limite honesto:** isto é um endpoint HTTP real servindo o contrato, não preço de
-> passagem ao vivo. Cotação de companhia aérea em tempo real exige API paga com chave
-> (Amadeus, Kiwi, Skyscanner), e chave não pode morar numa página estática pública — daí
-> o backend próprio. Os links de cada cenário levam à cotação real na fonte.
+## Cotações automáticas
+
+O painel não busca preço direto do navegador — Kayak e Google Flights bloqueiam por CORS e
+por ToS, e qualquer chave de API numa página estática pública ficaria exposta. A busca
+acontece **fora do navegador**:
+
+```
+GitHub Actions (semanal)
+  └─ tools/cotacoes_amadeus.py   busca preços reais na Amadeus  ──► data/observacoes.json
+       └─ tools/gerar_cotacoes.py   funde, calibra e publica    ──► data/cotacoes-enej27.json
+            └─ o painel lê esse JSON já pronto
+```
+
+A chave fica em secrets do repositório e nunca chega ao cliente.
+
+### Ligando (uma vez)
+
+1. Crie uma conta em [developers.amadeus.com](https://developers.amadeus.com) → **Self-Service**
+   → novo app. Copie a **API Key** e a **API Secret**. O tier gratuito cobre folgadamente o
+   uso deste painel.
+2. No repositório: **Settings → Secrets and variables → Actions → New repository secret**,
+   crie `AMADEUS_CLIENT_ID` e `AMADEUS_CLIENT_SECRET`.
+3. **Settings → Actions → General → Workflow permissions** → marque **Read and write
+   permissions** (o workflow precisa commitar o JSON atualizado).
+4. **Actions → Atualizar cotações → Run workflow** para rodar na hora. Depois roda sozinho
+   toda segunda.
+
+Sem os secrets, o workflow não quebra: o passo de busca é pulado e o painel segue com as
+estimativas calibradas.
+
+### Calibração, enquanto a cobertura não é total
+
+Voo para agosto de 2027 está no limite do horizonte de publicação das companhias (~11
+meses), então parte das rotas volta vazia. Para essas, o painel usa uma estimativa — mas
+não um chute solto: cada cotação real conferida recalibra o modelo inteiro.
+
+A primeira observação real (São Paulo, Kayak, R$ 1.154 contra R$ 760 estimados) revelou um
+fator de **1,52** — o modelo original subestimava tudo em ~1/3. Esse fator foi aplicado a
+todas as rotas não observadas.
+
+O painel marca cada número: **cotação real** (verde) ou **estimativa** (âmbar), e o rodapé
+mostra quantas origens já têm preço real por trás. Conforme a busca automática cobre mais
+rotas, o verde toma conta.
+
+> **Limite honesto:** o ambiente de teste da Amadeus é gratuito mas tem cobertura parcial
+> de rotas. Para cobertura total, troque `AMADEUS_HOST` para o host de produção. Os links
+> de cada cenário sempre levam à cotação real na fonte.
 
 ## Plugando o seu backend (Python / BigQuery)
 
