@@ -454,6 +454,7 @@ main{max-width:1180px;margin:-30px auto 0;padding:0 24px;position:relative;z-ind
   margin-right:5px;white-space:nowrap;vertical-align:1px;
 }
 .selo.real{background:var(--green-soft);color:var(--green);}
+.selo.obs{background:var(--blue-soft);color:var(--blue);}
 .selo.est{background:var(--warn-soft);color:var(--warn);}
 .line-nota{
   display:block;font-family:var(--font-body);font-size:11px;line-height:1.45;
@@ -883,12 +884,15 @@ const FALLBACK_PAYLOAD = {
       }
     ],
     "calibracao": {
-      "fator": 1.3244,
-      "observacoes": 1,
-      "ufs": [
+      "metodo": "estatistica observada por rota (Kayak, 12 meses)",
+      "levantado_em": "2026-09-15",
+      "rotas_com_dado": 26,
+      "cotacoes_datadas": 1,
+      "ufs_datadas": [
         "SP"
       ],
-      "hospedagem_conferida": false
+      "hospedagem_conferida": false,
+      "anac_referencia_trecho": 632.53
     }
   },
   "voos": [
@@ -898,9 +902,13 @@ const FALLBACK_PAYLOAD = {
       "iata": "RBR",
       "searchIata": "RBR",
       "regiao": "Norte",
-      "low": 1907,
-      "high": 3099,
-      "origem": "estimado",
+      "low": 1919,
+      "high": 2744,
+      "mid": 2488,
+      "barato": 1475,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Rio-Branco-RBR/Recife-REC",
       "host": false
     },
     {
@@ -909,9 +917,13 @@ const FALLBACK_PAYLOAD = {
       "iata": "MCP",
       "searchIata": "MCP",
       "regiao": "Norte",
-      "low": 1377,
-      "high": 2238,
-      "origem": "estimado",
+      "low": 1171,
+      "high": 2233,
+      "mid": 1763,
+      "barato": 1207,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Macapa-MCP/Recife-REC",
       "host": false
     },
     {
@@ -920,9 +932,13 @@ const FALLBACK_PAYLOAD = {
       "iata": "MAO",
       "searchIata": "MAO",
       "regiao": "Norte",
-      "low": 1457,
-      "high": 2367,
-      "origem": "estimado",
+      "low": 1313,
+      "high": 2014,
+      "mid": 1577,
+      "barato": 1147,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Manaus-MAO/Recife-REC",
       "host": false
     },
     {
@@ -931,9 +947,13 @@ const FALLBACK_PAYLOAD = {
       "iata": "BEL",
       "searchIata": "BEL",
       "regiao": "Norte",
-      "low": 954,
-      "high": 1550,
-      "origem": "estimado",
+      "low": 871,
+      "high": 1410,
+      "mid": 1131,
+      "barato": 789,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Belem-BEL/Recife-REC",
       "host": false
     },
     {
@@ -942,9 +962,13 @@ const FALLBACK_PAYLOAD = {
       "iata": "PVH",
       "searchIata": "PVH",
       "regiao": "Norte",
-      "low": 1695,
-      "high": 2755,
-      "origem": "estimado",
+      "low": 2030,
+      "high": 2953,
+      "mid": 2428,
+      "barato": 1578,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Porto-Velho-PVH/Recife-REC",
       "host": false
     },
     {
@@ -953,9 +977,13 @@ const FALLBACK_PAYLOAD = {
       "iata": "BVB",
       "searchIata": "BVB",
       "regiao": "Norte",
-      "low": 1801,
-      "high": 2927,
-      "origem": "estimado",
+      "low": 1969,
+      "high": 2783,
+      "mid": 2289,
+      "barato": 1836,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Boa-Vista-BVB/Recife-REC",
       "host": false
     },
     {
@@ -964,9 +992,13 @@ const FALLBACK_PAYLOAD = {
       "iata": "PMW",
       "searchIata": "PMW",
       "regiao": "Norte",
-      "low": 1139,
-      "high": 1851,
-      "origem": "estimado",
+      "low": 1175,
+      "high": 1748,
+      "mid": 1449,
+      "barato": 998,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Palmas-PMW/Recife-REC",
       "host": false
     },
     {
@@ -975,11 +1007,15 @@ const FALLBACK_PAYLOAD = {
       "iata": "MCZ",
       "searchIata": "MCZ",
       "regiao": "Nordeste",
-      "low": 530,
-      "high": 861,
-      "origem": "estimado",
+      "low": 509,
+      "high": 898,
+      "mid": 654,
+      "barato": 388,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Maceio-MCZ/Recife-REC",
       "host": false,
-      "nota": "Maceió fica a 260 km: ônibus leva ~4h, a partir de R$ 100 por trecho (~R$ 200 ida e volta)."
+      "nota": "Maceió fica a 260 km: ônibus leva ~4h a partir de R$ 100 por trecho. Compare com o voo."
     },
     {
       "uf": "BA",
@@ -987,9 +1023,13 @@ const FALLBACK_PAYLOAD = {
       "iata": "SSA",
       "searchIata": "SSA",
       "regiao": "Nordeste",
-      "low": 657,
-      "high": 1067,
-      "origem": "estimado",
+      "low": 543,
+      "high": 910,
+      "mid": 685,
+      "barato": 440,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Salvador-SSA/Recife-REC",
       "host": false
     },
     {
@@ -998,9 +1038,13 @@ const FALLBACK_PAYLOAD = {
       "iata": "FOR",
       "searchIata": "FOR",
       "regiao": "Nordeste",
-      "low": 620,
-      "high": 1007,
-      "origem": "estimado",
+      "low": 672,
+      "high": 1107,
+      "mid": 843,
+      "barato": 464,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Fortaleza-FOR/Recife-REC",
       "host": false
     },
     {
@@ -1010,8 +1054,12 @@ const FALLBACK_PAYLOAD = {
       "searchIata": "SLZ",
       "regiao": "Nordeste",
       "low": 805,
-      "high": 1309,
-      "origem": "estimado",
+      "high": 1287,
+      "mid": 1011,
+      "barato": 835,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Sao-Luis-SLZ/Recife-REC",
       "host": false
     },
     {
@@ -1020,11 +1068,15 @@ const FALLBACK_PAYLOAD = {
       "iata": "JPA",
       "searchIata": "JPA",
       "regiao": "Nordeste",
-      "low": 493,
-      "high": 801,
-      "origem": "estimado",
+      "low": 738,
+      "high": 1582,
+      "mid": 1162,
+      "barato": 824,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Joao-Pessoa-JPA/Recife-REC",
       "host": false,
-      "nota": "João Pessoa fica a 120 km: ônibus leva ~2h, a partir de R$ 27 por trecho (~R$ 60 ida e volta). Voar raramente compensa."
+      "nota": "Atenção: voar de João Pessoa custa em média MAIS que de São Paulo (R$ 1.162 x R$ 1.085). São 120 km — o ônibus leva ~2h a partir de R$ 27 por trecho."
     },
     {
       "uf": "PE",
@@ -1034,7 +1086,11 @@ const FALLBACK_PAYLOAD = {
       "regiao": "Nordeste",
       "low": 0,
       "high": 0,
+      "mid": 0,
+      "barato": 0,
       "origem": "anfitriã",
+      "conferido": "",
+      "fonte_url": "",
       "host": true
     },
     {
@@ -1043,9 +1099,13 @@ const FALLBACK_PAYLOAD = {
       "iata": "THE",
       "searchIata": "THE",
       "regiao": "Nordeste",
-      "low": 742,
-      "high": 1205,
-      "origem": "estimado",
+      "low": 683,
+      "high": 1312,
+      "mid": 917,
+      "barato": 797,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Teresina-THE/Recife-REC",
       "host": false
     },
     {
@@ -1054,11 +1114,15 @@ const FALLBACK_PAYLOAD = {
       "iata": "NAT",
       "searchIata": "NAT",
       "regiao": "Nordeste",
-      "low": 530,
-      "high": 861,
-      "origem": "estimado",
+      "low": 435,
+      "high": 895,
+      "mid": 656,
+      "barato": 455,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Natal-NAT/Recife-REC",
       "host": false,
-      "nota": "Natal fica a 300 km: ônibus leva ~4h30, a partir de R$ 74 por trecho (~R$ 150 ida e volta)."
+      "nota": "Natal fica a 300 km: ônibus leva ~4h30 a partir de R$ 74 por trecho."
     },
     {
       "uf": "SE",
@@ -1066,9 +1130,13 @@ const FALLBACK_PAYLOAD = {
       "iata": "AJU",
       "searchIata": "AJU",
       "regiao": "Nordeste",
-      "low": 588,
-      "high": 956,
-      "origem": "estimado",
+      "low": 836,
+      "high": 1333,
+      "mid": 996,
+      "barato": 594,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Aracaju-AJU/Recife-REC",
       "host": false
     },
     {
@@ -1077,9 +1145,13 @@ const FALLBACK_PAYLOAD = {
       "iata": "BSB",
       "searchIata": "BSB",
       "regiao": "Centro-Oeste",
-      "low": 848,
-      "high": 1377,
-      "origem": "estimado",
+      "low": 825,
+      "high": 1403,
+      "mid": 1067,
+      "barato": 642,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Brasilia-BSB/Recife-REC",
       "host": false
     },
     {
@@ -1089,8 +1161,12 @@ const FALLBACK_PAYLOAD = {
       "searchIata": "GYN",
       "regiao": "Centro-Oeste",
       "low": 996,
-      "high": 1618,
-      "origem": "estimado",
+      "high": 1623,
+      "mid": 1254,
+      "barato": 841,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Goiania-GYN/Recife-REC",
       "host": false
     },
     {
@@ -1099,9 +1175,13 @@ const FALLBACK_PAYLOAD = {
       "iata": "CGB",
       "searchIata": "CGB",
       "regiao": "Centro-Oeste",
-      "low": 1218,
-      "high": 1980,
-      "origem": "estimado",
+      "low": 1110,
+      "high": 1726,
+      "mid": 1380,
+      "barato": 968,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Cuiaba-CGB/Recife-REC",
       "host": false
     },
     {
@@ -1110,9 +1190,13 @@ const FALLBACK_PAYLOAD = {
       "iata": "CGR",
       "searchIata": "CGR",
       "regiao": "Centro-Oeste",
-      "low": 1261,
-      "high": 2049,
-      "origem": "estimado",
+      "low": 1075,
+      "high": 1717,
+      "mid": 1348,
+      "barato": 1070,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Campo-Grande-CGR/Recife-REC",
       "host": false
     },
     {
@@ -1121,20 +1205,28 @@ const FALLBACK_PAYLOAD = {
       "iata": "VIX",
       "searchIata": "VIX",
       "regiao": "Sudeste",
-      "low": 901,
-      "high": 1463,
-      "origem": "estimado",
+      "low": 858,
+      "high": 1415,
+      "mid": 1072,
+      "barato": 730,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Vitoria-VIX/Recife-REC",
       "host": false
     },
     {
       "uf": "MG",
       "capital": "Belo Horizonte",
       "iata": "CNF",
-      "searchIata": "CNF",
+      "searchIata": "BHZ",
       "regiao": "Sudeste",
-      "low": 864,
-      "high": 1403,
-      "origem": "estimado",
+      "low": 949,
+      "high": 1538,
+      "mid": 1193,
+      "barato": 766,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Belo-Horizonte-BHZ/Recife-REC",
       "host": false
     },
     {
@@ -1143,9 +1235,13 @@ const FALLBACK_PAYLOAD = {
       "iata": "GIG",
       "searchIata": "RIO",
       "regiao": "Sudeste",
-      "low": 832,
-      "high": 1352,
-      "origem": "estimado",
+      "low": 896,
+      "high": 1529,
+      "mid": 1143,
+      "barato": 922,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Rio-de-Janeiro-RIO/Recife-REC",
       "host": false
     },
     {
@@ -1156,9 +1252,12 @@ const FALLBACK_PAYLOAD = {
       "regiao": "Sudeste",
       "low": 923,
       "high": 1500,
-      "origem": "observado",
-      "host": false,
-      "conferido": "Kayak, 2026-09-14"
+      "mid": 1154,
+      "barato": 758,
+      "origem": "datado",
+      "conferido": "Kayak, 2026-09-14",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Sao-Paulo-SAO/Recife-REC",
+      "host": false
     },
     {
       "uf": "PR",
@@ -1166,9 +1265,13 @@ const FALLBACK_PAYLOAD = {
       "iata": "CWB",
       "searchIata": "CWB",
       "regiao": "Sul",
-      "low": 1033,
-      "high": 1679,
-      "origem": "estimado",
+      "low": 927,
+      "high": 1704,
+      "mid": 1273,
+      "barato": 1009,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Curitiba-CWB/Recife-REC",
       "host": false
     },
     {
@@ -1177,9 +1280,13 @@ const FALLBACK_PAYLOAD = {
       "iata": "FLN",
       "searchIata": "FLN",
       "regiao": "Sul",
-      "low": 1097,
-      "high": 1782,
-      "origem": "estimado",
+      "low": 1134,
+      "high": 1727,
+      "mid": 1368,
+      "barato": 1295,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Florianopolis-FLN/Recife-REC",
       "host": false
     },
     {
@@ -1188,9 +1295,13 @@ const FALLBACK_PAYLOAD = {
       "iata": "POA",
       "searchIata": "POA",
       "regiao": "Sul",
-      "low": 1165,
+      "low": 1208,
       "high": 1894,
-      "origem": "estimado",
+      "mid": 1488,
+      "barato": 937,
+      "origem": "observado",
+      "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Porto-Alegre-POA/Recife-REC",
       "host": false
     }
   ],
@@ -1293,6 +1404,11 @@ function normalize(json){
       searchIata: v.searchIata || v.iata || "",
       low: Number(v.low) || 0,
       high: Number(v.high) || 0,
+      // centro da tarifa. Vem explicito porque a media observada nao e o meio
+      // da faixa tipica — usar (low+high)/2 superestimaria.
+      mid: Number(v.mid) || ((Number(v.low) || 0) + (Number(v.high) || 0)) / 2,
+      barato: Number(v.barato) || 0,
+      fonteUrl: v.fonte_url || "",
       host: Boolean(v.host),
       // "observado" = cotacao real buscada na fonte | "estimado" = modelo calibrado
       origem: v.origem || "estimado",
@@ -1396,12 +1512,20 @@ function uberUrl(venue){
 /* Distingue o que veio de cotacao real do que ainda e estimativa do modelo.
    O usuario precisa saber em qual numero pode confiar sem conferir. */
 function selo(origem, conferido){
-  if (origem === "observado"){
-    const quando = (conferido || "").replace(/(\d{4})-(\d{2})-(\d{2})/, "$3/$2");
-    return '<span class="selo real" title="Preço buscado na fonte, não estimado">' +
-           "cotação real" + (quando ? " · " + quando : "") + "</span>";
+  const quando = (conferido || "").replace(/(\d{4})-(\d{2})-(\d{2})/, "$3/$2");
+
+  // "datado"    = preco para as datas exatas do evento (o melhor dado)
+  // "observado" = estatistica real da rota nos ultimos 12 meses
+  // "estimado"  = sem lastro
+  if (origem === "datado"){
+    return '<span class="selo real" title="Preço cotado para as datas do evento">' +
+           "cotação datada" + (quando ? " · " + quando : "") + "</span>";
   }
-  return '<span class="selo est" title="Estimativa do modelo, calibrada pelas cotações reais já conferidas">estimativa</span>';
+  if (origem === "observado"){
+    return '<span class="selo obs" title="Estatística real da rota nos últimos 12 meses, não uma estimativa">' +
+           "dado real" + (quando ? " · " + quando : "") + "</span>";
+  }
+  return '<span class="selo est" title="Estimativa sem cotação por trás">estimativa</span>';
 }
 
 /* Transporte interno de um cenario numa sede:
@@ -1430,7 +1554,7 @@ function fareMultiplier(diffDays){
 
 function currentFare(){
   if (!selected || selected.host) return 0;
-  return Math.round(((selected.low + selected.high) / 2) * fareMultiplier(daysToEvent()));
+  return Math.round(selected.mid * fareMultiplier(daysToEvent()));
 }
 
 /* ==========================================================================
@@ -1643,6 +1767,7 @@ function renderTicket(){
   const mid = currentFare();
   const low = Math.round(selected.low * mult);
   const high = Math.round(selected.high * mult);
+  const barato = selected.barato ? Math.round(selected.barato * mult) : 0;
 
   let windowMsg, windowCls = "";
   if (d <= 0){
@@ -1680,6 +1805,7 @@ function renderTicket(){
           '<p class="fare-label">Passagem aérea &middot; ida e volta</p>' +
           '<p class="fare-value">' + fmt(mid) + "</p>" +
           '<p class="fare-range">faixa ' + fmt(low) + " – " + fmt(high) +
+            (barato ? " · menor achado " + fmt(barato) : "") +
             (selected.origem === "observado"
               ? ' · <span class="fare-real">cotação real, ' + selected.conferido + "</span>"
               : ' · <span class="fare-est">estimativa calibrada</span>') + "</p>" +
@@ -1729,7 +1855,8 @@ function renderTiers(){
               ? " +" + Math.round((fareMultiplier(daysToEvent()) - 1) * 100) + "% de sazonalidade"
               : "") +
             src(flightsUrl(selected), "Google Flights") +
-            src(kayakUrl(selected), "Kayak") },
+            src(kayakUrl(selected), "Kayak") +
+            (selected.fonteUrl ? src(selected.fonteUrl, "fonte do dado") : "") },
 
       { key:"hosp", label:"Hospedagem (" + EVENT.nights + " noites)",
         value:tier.hosp, display: fmt(tier.hosp),

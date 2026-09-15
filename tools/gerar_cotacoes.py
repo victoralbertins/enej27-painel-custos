@@ -115,48 +115,76 @@ FONTES = [
 ]
 
 # ---------------------------------------------------------------------------
-# MODELO BASE — estimativa central (ida e volta) antes da calibração.
-# searchIata: código usado nos links de busca. Difere do iata quando a cidade
-# tem código metropolitano (SAO cobre GRU+CGH, RIO cobre GIG+SDU).
-# nota: alerta exibido no painel quando voar não é a opção óbvia.
+# COTAÇÕES POR ROTA — DADOS REAIS
+# Levantados nas páginas de rota do Kayak em 15/09/2026, uma por origem.
+# Cada página publica estatística observada dos últimos 12 meses:
+#
+#   barato  = menor ida e volta encontrada recentemente
+#   tip_min / tip_max = faixa de tarifas típicas
+#   media   = média de ida e volta dos últimos 12 meses  <- usada como centro
+#
+# Fonte de cada linha: https://www.kayak.com.br/flight-routes/<Cidade-CODE>/Recife-REC
+# O inventário com a URL exata de cada rota está em FONTES.csv.
+#
+# NÃO são cotações para as datas exatas do evento — são a estatística da rota.
+# A busca da Amadeus (tools/cotacoes_amadeus.py) sobrepõe estes valores com
+# preço datado quando a rota estiver disponível.
 # ---------------------------------------------------------------------------
-BASE_VOO = [
-    # (uf, capital,          iata,  regiao,         base, searchIata, nota)
-    ("AC", "Rio Branco",     "RBR", "Norte",        1800, None, None),
-    ("AP", "Macapá",         "MCP", "Norte",        1300, None, None),
-    ("AM", "Manaus",         "MAO", "Norte",        1375, None, None),
-    ("PA", "Belém",          "BEL", "Norte",         900, None, None),
-    ("RO", "Porto Velho",    "PVH", "Norte",        1600, None, None),
-    ("RR", "Boa Vista",      "BVB", "Norte",        1700, None, None),
-    ("TO", "Palmas",         "PMW", "Norte",        1075, None, None),
+COTACOES = [
+    # (uf, capital,          iata,  regiao,        search, barato, tip_min, tip_max, media, nota)
+    ("AC", "Rio Branco",     "RBR", "Norte",        None,  1475, 1919, 2744, 2488, None),
+    ("AP", "Macapá",         "MCP", "Norte",        None,  1207, 1171, 2233, 1763, None),
+    ("AM", "Manaus",         "MAO", "Norte",        None,  1147, 1313, 2014, 1577, None),
+    ("PA", "Belém",          "BEL", "Norte",        None,   789,  871, 1410, 1131, None),
+    ("RO", "Porto Velho",    "PVH", "Norte",        None,  1578, 2030, 2953, 2428, None),
+    ("RR", "Boa Vista",      "BVB", "Norte",        None,  1836, 1969, 2783, 2289, None),
+    ("TO", "Palmas",         "PMW", "Norte",        None,   998, 1175, 1748, 1449, None),
 
-    ("AL", "Maceió",         "MCZ", "Nordeste",      500, None,
-     "Maceió fica a 260 km: ônibus leva ~4h, a partir de R$ 100 por trecho (~R$ 200 ida e volta)."),
-    ("BA", "Salvador",       "SSA", "Nordeste",      620, None, None),
-    ("CE", "Fortaleza",      "FOR", "Nordeste",      585, None, None),
-    ("MA", "São Luís",       "SLZ", "Nordeste",      760, None, None),
-    ("PB", "João Pessoa",    "JPA", "Nordeste",      465, None,
-     "João Pessoa fica a 120 km: ônibus leva ~2h, a partir de R$ 27 por trecho (~R$ 60 ida e volta). Voar raramente compensa."),
-    ("PE", "Recife",         "REC", "Nordeste",        0, None, None),  # anfitriã
-    ("PI", "Teresina",       "THE", "Nordeste",      700, None, None),
-    ("RN", "Natal",          "NAT", "Nordeste",      500, None,
-     "Natal fica a 300 km: ônibus leva ~4h30, a partir de R$ 74 por trecho (~R$ 150 ida e volta)."),
-    ("SE", "Aracaju",        "AJU", "Nordeste",      555, None, None),
+    ("AL", "Maceió",         "MCZ", "Nordeste",     None,   388,  509,  898,  654,
+     "Maceió fica a 260 km: ônibus leva ~4h a partir de R$ 100 por trecho. Compare com o voo."),
+    ("BA", "Salvador",       "SSA", "Nordeste",     None,   440,  543,  910,  685, None),
+    ("CE", "Fortaleza",      "FOR", "Nordeste",     None,   464,  672, 1107,  843, None),
+    ("MA", "São Luís",       "SLZ", "Nordeste",     None,   835,  805, 1287, 1011, None),
+    ("PB", "João Pessoa",    "JPA", "Nordeste",     None,   824,  738, 1582, 1162,
+     "Atenção: voar de João Pessoa custa em média MAIS que de São Paulo (R$ 1.162 x R$ 1.085). "
+     "São 120 km — o ônibus leva ~2h a partir de R$ 27 por trecho."),
+    ("PE", "Recife",         "REC", "Nordeste",     None,     0,    0,    0,    0, None),  # anfitriã
+    ("PI", "Teresina",       "THE", "Nordeste",     None,   797,  683, 1312,  917, None),
+    ("RN", "Natal",          "NAT", "Nordeste",     None,   455,  435,  895,  656,
+     "Natal fica a 300 km: ônibus leva ~4h30 a partir de R$ 74 por trecho."),
+    ("SE", "Aracaju",        "AJU", "Nordeste",     None,   594,  836, 1333,  996, None),
 
-    ("DF", "Brasília",       "BSB", "Centro-Oeste",  800, None, None),
-    ("GO", "Goiânia",        "GYN", "Centro-Oeste",  940, None, None),
-    ("MT", "Cuiabá",         "CGB", "Centro-Oeste", 1150, None, None),
-    ("MS", "Campo Grande",   "CGR", "Centro-Oeste", 1190, None, None),
+    ("DF", "Brasília",       "BSB", "Centro-Oeste", None,   642,  825, 1403, 1067, None),
+    ("GO", "Goiânia",        "GYN", "Centro-Oeste", None,   841,  996, 1623, 1254, None),
+    ("MT", "Cuiabá",         "CGB", "Centro-Oeste", None,   968, 1110, 1726, 1380, None),
+    ("MS", "Campo Grande",   "CGR", "Centro-Oeste", None,  1070, 1075, 1717, 1348, None),
 
-    ("ES", "Vitória",        "VIX", "Sudeste",       850, None, None),
-    ("MG", "Belo Horizonte", "CNF", "Sudeste",       815, None, None),
-    ("RJ", "Rio de Janeiro", "GIG", "Sudeste",       785, "RIO", None),
-    ("SP", "São Paulo",      "GRU", "Sudeste",       760, "SAO", None),
+    ("ES", "Vitória",        "VIX", "Sudeste",      None,   730,  858, 1415, 1072, None),
+    ("MG", "Belo Horizonte", "CNF", "Sudeste",      "BHZ",  766,  949, 1538, 1193, None),
+    ("RJ", "Rio de Janeiro", "GIG", "Sudeste",      "RIO",  922,  896, 1529, 1143, None),
+    ("SP", "São Paulo",      "GRU", "Sudeste",      "SAO",  758,  873, 1513, 1085, None),
 
-    ("PR", "Curitiba",       "CWB", "Sul",           975, None, None),
-    ("SC", "Florianópolis",  "FLN", "Sul",          1035, None, None),
-    ("RS", "Porto Alegre",   "POA", "Sul",          1100, None, None),
+    ("PR", "Curitiba",       "CWB", "Sul",          None,  1009,  927, 1704, 1273, None),
+    ("SC", "Florianópolis",  "FLN", "Sul",          None,  1295, 1134, 1727, 1368, None),
+    ("RS", "Porto Alegre",   "POA", "Sul",          None,   937, 1208, 1894, 1488, None),
 ]
+
+KAYAK_SLUGS = {
+    "AC": "Rio-Branco-RBR", "AP": "Macapa-MCP", "AM": "Manaus-MAO", "PA": "Belem-BEL",
+    "RO": "Porto-Velho-PVH", "RR": "Boa-Vista-BVB", "TO": "Palmas-PMW",
+    "AL": "Maceio-MCZ", "BA": "Salvador-SSA", "CE": "Fortaleza-FOR", "MA": "Sao-Luis-SLZ",
+    "PB": "Joao-Pessoa-JPA", "PI": "Teresina-THE", "RN": "Natal-NAT", "SE": "Aracaju-AJU",
+    "DF": "Brasilia-BSB", "GO": "Goiania-GYN", "MT": "Cuiaba-CGB", "MS": "Campo-Grande-CGR",
+    "ES": "Vitoria-VIX", "MG": "Belo-Horizonte-BHZ", "RJ": "Rio-de-Janeiro-RIO",
+    "SP": "Sao-Paulo-SAO", "PR": "Curitiba-CWB", "SC": "Florianopolis-FLN", "RS": "Porto-Alegre-POA",
+}
+LEVANTADO_EM = "2026-09-15"
+
+
+def url_kayak_rota(uf):
+    slug = KAYAK_SLUGS.get(uf)
+    return f"https://www.kayak.com.br/flight-routes/{slug}/Recife-REC" if slug else ""
+
 
 # ---------------------------------------------------------------------------
 # CENÁRIOS DE GASTO — valores unitários; o painel fecha os totais.
@@ -227,67 +255,45 @@ CENARIOS = [
 
 
 # Tarifa aérea doméstica média por trecho — ANAC, maio de 2026.
-# Serve de âncora de NÍVEL enquanto não há observação suficiente por rota.
+# Não entra mais no cálculo: serve só de referência de sanidade no relatório,
+# já que agora todas as rotas têm estatística observada.
 ANAC_TARIFA_MEDIA_TRECHO = 632.53
-OBSERVACOES_MINIMAS = 5  # a partir daqui as observações substituem a âncora
 
 
-def fator_calibracao(observacoes):
-    """Quanto o modelo base precisa ser multiplicado para bater com a realidade.
+def montar_voos(observacoes):
+    """Monta as rotas. Precedência da fonte, da melhor para a pior:
 
-    Dois regimes, e o segundo é melhor:
+    1. cotação datada (Amadeus ou conferida na mão) para as datas do evento;
+    2. estatística de 12 meses da rota, do Kayak — o padrão hoje.
 
-    1. POUCAS OBSERVAÇÕES -> ancora o nível na média oficial da ANAC. Calibrar
-       a tabela inteira pela razão de uma única rota superestima: uma rota-tronco
-       como SP-REC é mais barata que a média nacional, então o fator dela não
-       descreve as outras. Foi o erro da primeira versão (fator 1,52, que jogava
-       a tabela 20% acima da ANAC).
-
-    2. OBSERVACOES_MINIMAS OU MAIS -> usa a razão média observada/modelo, que a
-       essa altura já descreve o mercado melhor que a média nacional.
-
-    Em qualquer regime, rota observada vale o preço real, não o calibrado.
+    Não há mais estimativa sem lastro: toda origem tem dado observado.
     """
-    base = {uf: b for uf, _, _, _, b, _, _ in BASE_VOO}
-
-    razoes = [obs["preco"] / base[uf]
-              for uf, obs in observacoes.items()
-              if base.get(uf)]
-
-    if len(razoes) >= OBSERVACOES_MINIMAS:
-        return sum(razoes) / len(razoes)
-
-    # Âncora ANAC: a média ida e volta da tabela deve bater com a média nacional.
-    precos = [b for b in base.values() if b]
-    media_base = sum(precos) / len(precos)
-    alvo = ANAC_TARIFA_MEDIA_TRECHO * 2
-    return alvo / media_base if media_base else 1.0
-
-
-def montar_voos(fator, observacoes):
     voos = []
-    for uf, capital, iata, regiao, base, search, nota in BASE_VOO:
+    for uf, capital, iata, regiao, search, barato, tmin, tmax, media, nota in COTACOES:
         obs = observacoes.get(uf)
 
-        if base == 0:                 # federação anfitriã
-            centro, origem = 0, "anfitriã"
-        elif obs:                     # cotação real conferida
-            centro, origem = obs["preco"], "observado"
-        else:                         # estimativa calibrada
-            centro, origem = base * fator, "estimado"
+        if media == 0:                       # federação anfitriã
+            low = high = mid = 0
+            origem, conferido = "anfitriã", ""
+        elif obs:                            # cotação datada vence
+            mid = obs["preco"]
+            low, high = round(mid * 0.80), round(mid * 1.30)
+            origem = "datado"
+            conferido = f"{obs['fonte']}, {obs['conferido_em']}"
+        else:                                # estatística da rota
+            low, high, mid = tmin, tmax, media
+            origem = "observado"
+            conferido = f"Kayak (12 meses), {LEVANTADO_EM}"
 
         voos.append({
-            "uf": uf,
-            "capital": capital,
-            "iata": iata,
-            "searchIata": search or iata,
-            "regiao": regiao,
-            "low": round(centro * FAIXA_MIN),
-            "high": round(centro * FAIXA_MAX),
-            "origem": origem,
+            "uf": uf, "capital": capital, "iata": iata,
+            "searchIata": search or iata, "regiao": regiao,
+            "low": low, "high": high, "mid": mid,
+            "barato": barato,
+            "origem": origem, "conferido": conferido,
+            "fonte_url": url_kayak_rota(uf),
             "host": uf == "PE",
             **({"nota": nota} if nota else {}),
-            **({"conferido": f"{obs['fonte']}, {obs['conferido_em']}"} if obs else {}),
         })
     return voos
 
@@ -311,7 +317,6 @@ def montar_cenarios(hoteis):
 
 def montar_payload():
     observacoes, hoteis = carregar_observacoes()
-    fator = fator_calibracao(observacoes)
     conferidas = sorted(observacoes)
 
     return {
@@ -323,13 +328,16 @@ def montar_payload():
             "fonte": "tools/gerar_cotacoes.py",
             "fontes": FONTES,
             "calibracao": {
-                "fator": round(fator, 4),
-                "observacoes": len(conferidas),
-                "ufs": conferidas,
+                "metodo": "estatistica observada por rota (Kayak, 12 meses)",
+                "levantado_em": LEVANTADO_EM,
+                "rotas_com_dado": len(COTACOES) - 1,   # exclui a anfitriã
+                "cotacoes_datadas": len(conferidas),
+                "ufs_datadas": conferidas,
                 "hospedagem_conferida": bool(hoteis),
+                "anac_referencia_trecho": ANAC_TARIFA_MEDIA_TRECHO,
             },
         },
-        "voos": montar_voos(fator, observacoes),
+        "voos": montar_voos(observacoes),
         "tiers": montar_cenarios(hoteis),
     }
 
@@ -375,12 +383,15 @@ def main():
     cal = payload["meta"]["calibracao"]
     print(f"{SAIDA_JSON.name}: {len(payload['voos'])} origens, "
           f"{len(payload['tiers'])} cenarios")
-    print(f"  calibracao: fator {cal['fator']} a partir de "
-          f"{cal['observacoes']} cotacao(oes) real(is): {', '.join(cal['ufs'])}")
-    injetar_fallback(payload)
+    print(f"  {cal['rotas_com_dado']} rotas com estatistica observada; "
+          f"{cal['cotacoes_datadas']} com cotacao datada")
 
-    sp = next(v for v in payload["voos"] if v["uf"] == "SP")
-    print(f"  SP: R$ {sp['low']}-{sp['high']} ({sp['origem']})")
+    voos = [v for v in payload["voos"] if not v["host"]]
+    media = sum(v["mid"] for v in voos) / len(voos)
+    anac_rt = ANAC_TARIFA_MEDIA_TRECHO * 2
+    print(f"  media ida e volta: R$ {media:.0f} "
+          f"({media/anac_rt*100-100:+.0f}% vs media nacional da ANAC)")
+    injetar_fallback(payload)
 
 
 if __name__ == "__main__":
