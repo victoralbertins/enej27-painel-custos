@@ -431,12 +431,23 @@ main{max-width:1180px;margin:-30px auto 0;padding:0 24px;position:relative;z-ind
 .tier-desc{font-size:12px;color:var(--muted);margin:0 0 13px;line-height:1.45;}
 
 .line{
-  display:flex;justify-content:space-between;align-items:baseline;gap:10px;
-  font-size:13px;padding:7px 0;border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:flex-start;gap:10px;
+  font-size:13px;padding:9px 0;border-bottom:1px solid var(--line);
 }
-.line span:first-child{color:var(--ink-soft);}
+.line-label{
+  display:flex;flex-direction:column;gap:3px;min-width:0;color:var(--ink-soft);
+}
+/* memoria de calculo: a conta que gerou o numero da direita */
+.line-math{
+  font-family:var(--font-mono);font-size:10.5px;line-height:1.5;color:var(--muted);
+}
+.line-src{
+  color:var(--blue);text-decoration:none;font-weight:600;
+  border-bottom:1px solid transparent;white-space:nowrap;
+}
+.line-src:hover{border-bottom-color:var(--blue);}
 .line .val{
-  font-family:var(--font-mono);font-weight:500;color:var(--ink);
+  font-family:var(--font-mono);font-weight:500;color:var(--ink);line-height:1.5;
   font-variant-numeric:tabular-nums;white-space:nowrap;
 }
 .line.excluded{opacity:.5;}
@@ -471,6 +482,40 @@ main{max-width:1180px;margin:-30px auto 0;padding:0 24px;position:relative;z-ind
 }
 
 .empty-note{padding:26px 20px;color:var(--muted);font-size:13.5px;grid-column:1/-1;margin:0;}
+
+/* --------------------- MEMORIA DE CALCULO --------------------- */
+.calc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;padding:20px;}
+@media (max-width:820px){ .calc{grid-template-columns:1fr;} }
+.calc-block{display:flex;flex-direction:column;gap:10px;min-width:0;}
+.calc-block h3{
+  margin:0;font-size:14px;font-weight:700;letter-spacing:-.01em;
+  display:flex;align-items:center;gap:8px;
+}
+.calc-block h3::before{content:"";width:9px;height:9px;border-radius:3px;flex:none;}
+.calc-alim h3::before{background:var(--green-bright);}
+.calc-transp h3::before{background:var(--blue);}
+.calc-intro{font-size:12.5px;color:var(--muted);margin:0;line-height:1.55;}
+.formula{
+  font-family:var(--font-mono);font-size:11.5px;line-height:1.6;
+  background:var(--surface-sunk);border:1px solid var(--line);
+  border-left:3px solid var(--blue);border-radius:9px;padding:10px 12px;color:var(--ink);
+  overflow-x:auto;
+}
+.calc-alim .formula{border-left-color:var(--green-bright);}
+.calc-rows{display:flex;flex-direction:column;gap:0;}
+.calc-row{
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  font-size:12px;padding:7px 0;border-bottom:1px solid var(--line);
+}
+.calc-row:last-child{border-bottom:0;}
+.calc-row .cr-name{font-weight:600;color:var(--ink);flex:none;}
+.calc-row .cr-math{
+  font-family:var(--font-mono);font-size:10.5px;color:var(--muted);
+  text-align:right;min-width:0;
+}
+.calc-row .cr-math b{color:var(--ink);font-weight:600;}
+.calc-foot{font-size:11.5px;color:var(--muted);margin:0;line-height:1.55;}
+.calc-foot b{color:var(--ink);font-weight:600;}
 
 /* --------------------- RODAPE --------------------- */
 footer{max-width:1180px;margin:30px auto 0;padding:0 24px;}
@@ -581,6 +626,14 @@ footer code{
       <section class="panel">
         <div class="tiers" id="tiers"></div>
       </section>
+
+      <div class="tiers-head">
+        <h2>Como chegamos nesses números</h2>
+        <span class="ctx">memória de cálculo</span>
+      </div>
+      <section class="panel">
+        <div class="calc" id="calc"></div>
+      </section>
     </div>
 
   </div>
@@ -588,8 +641,8 @@ footer code{
   <footer>
     <div class="foot-grid">
       <div>
-        <h4>Passagem aérea</h4>
-        <p>Valores de ida e volta até o Aeroporto Internacional dos Guararapes (REC), servidos pela API de cotações. Com 8 semanas ou mais de antecedência aplica-se a tarifa de referência; abaixo disso incide um acréscimo estimado de sazonalidade que chega a 80% na véspera.</p>
+        <h4>Passagem e hospedagem</h4>
+        <p>Cada cenário traz o link da busca já preenchida com origem, destino e as datas do evento — <b>Google Flights</b> e <b>Kayak</b> para a passagem, <b>Booking</b> para a hospedagem, filtrado pela categoria do cenário. Os valores do painel são estimativas de referência: confira o preço real na fonte antes de fechar o orçamento.</p>
       </div>
       <div>
         <h4>Estadia</h4>
@@ -601,7 +654,7 @@ footer code{
       </div>
       <div>
         <h4>Dados</h4>
-        <p>As tarifas vem de <code>loadDynamicData()</code>, que consulta a API configurada em <code>API_ENDPOINT</code> e cai no payload simulado quando a API não responde. Reconfirme os valores próximo à data de compra.</p>
+        <p><code>API_ENDPOINT</code> ainda aponta para um endereço de exemplo, que não existe. Por isso <code>loadDynamicData()</code> cai na base de referência interna — é o fallback previsto, não uma falha. Ao trocar pelo endpoint real, o selo abaixo passa a "em tempo real" sozinho. Reconfirme os valores próximo à data de compra.</p>
       </div>
     </div>
     <span class="src-pill" id="srcPill"><span class="dot"></span> fonte: carregando</span>
@@ -647,6 +700,9 @@ const EVENT = {
   airport: "Aeroporto Internacional dos Guararapes",
   startISO: "2027-08-25T00:00:00",
   window: "25 a 30 de agosto de 2027",
+  // usadas para montar os links de busca de passagem e hospedagem
+  departISO: "2027-08-25",
+  returnISO: "2027-08-30",
   nights: 5,
   days: 6
 };
@@ -659,12 +715,21 @@ const TICKET = { enabled: false, price: 0, installments: 12 };
 
 /* ---------- SEDES CANDIDATAS ----------
    distKm  = distância aproximada até a rede hoteleira de Boa Viagem
-   factor  = multiplicador aplicado ao custo de transporte interno */
+   factor  = multiplicador aplicado ao custo de transporte interno.
+             Sai da razão entre a distância da sede e a do Geraldão (a mais
+             proxima), amortecida: 1 + (distKm/6 - 1) * 0.30. Ou seja, dobrar a
+             distância NÃO dobra o gasto — parte do trajeto é a mesma tarifa de
+             ônibus, e a corrida de app cresce menos que proporcional.
+   maps    = endereço usado no link de rota do Google Maps */
 const VENUES = [
-  { id:"geraldao", name:"Geraldão", area:"Imbiribeira, Recife", distKm:6,  factor:1.00 },
-  { id:"classichall", name:"Classic Hall", area:"Salgadinho, Olinda", distKm:14, factor:1.25 },
-  { id:"cecon", name:"Centro de Convenções (Cecon)", area:"Salgadinho, Olinda", distKm:13, factor:1.20 },
-  { id:"expocenter", name:"Recife Expo Center", area:"Salgadinho, Olinda", distKm:13, factor:1.18 }
+  { id:"geraldao", name:"Geraldão", area:"Imbiribeira, Recife", distKm:6,  factor:1.00,
+    maps:"Ginásio Geraldão, Imbiribeira, Recife - PE" },
+  { id:"classichall", name:"Classic Hall", area:"Salgadinho, Olinda", distKm:14, factor:1.25,
+    maps:"Classic Hall, Olinda - PE" },
+  { id:"cecon", name:"Centro de Convenções (Cecon)", area:"Salgadinho, Olinda", distKm:13, factor:1.20,
+    maps:"Centro de Convenções de Pernambuco, Olinda - PE" },
+  { id:"expocenter", name:"Recife Expo Center", area:"Salgadinho, Olinda", distKm:13, factor:1.18,
+    maps:"Recife Expo Center, Olinda - PE" }
 ];
 
 /* ---------- ESTADO DA APLICACAO ---------- */
@@ -772,17 +837,32 @@ function simulatedPayload(){
       { uf:"SC", capital:"Florianópolis", iata:"FLN", regiao:"Sul", low:850, high:1220 },
       { uf:"RS", capital:"Porto Alegre",  iata:"POA", regiao:"Sul", low:900, high:1300 }
     ],
-    // hosp = 5 pernoites | alim = 6 dias | interno = 6 dias (antes do fator da sede)
+    /* Os cenários são descritos por VALOR UNITÁRIO, não por total fechado.
+       Quem fecha a conta é o normalize(), multiplicando pelas noites/dias do
+       EVENT. Assim o painel consegue mostrar a memória de cálculo na tela e
+       você só precisa atualizar o preço unitário no backend.
+
+         hospNight = diária por pessoa           -> x 5 pernoites
+         meals     = 3 refeições por dia         -> x 6 dias
+         transit   = deslocamentos por dia       -> x 6 dias x fator da sede  */
     tiers: [
       { key:"econ", name:"Econômico", cls:"tier-econ",
         desc:"Hostel compartilhado em Boa Viagem, prato feito e ônibus/metrô.",
-        hosp:350, alim:360, interno:100 },
+        hospNight:70,  hospWhat:"cama em quarto compartilhado", hotelFilter:"ht_id%3D203",
+        meals:{ cafe:12, almoco:25, jantar:23 }, mealsWhat:"padaria, prato feito e lanche à noite",
+        transit:{ rides:4, fare:4.90, app:0, appFare:0 }, transitWhat:"4 embarques de ônibus/metrô por dia" },
+
       { key:"inter", name:"Intermediário", cls:"tier-inter",
         desc:"Hotel 3 estrelas em quarto duplo, self-service e mix de ônibus e app.",
-        hosp:650, alim:570, interno:190 },
+        hospNight:130, hospWhat:"quarto duplo, valor por pessoa", hotelFilter:"class%3D3",
+        meals:{ cafe:18, almoco:42, jantar:35 }, mealsWhat:"café do hotel, self-service por quilo e jantar simples",
+        transit:{ rides:2, fare:4.90, app:1, appFare:24 }, transitWhat:"2 embarques + 1 corrida de app por dia" },
+
       { key:"conforto", name:"Conforto", cls:"tier-conforto",
         desc:"Hotel 4 estrelas na orla, restaurantes à la carte e app na maioria dos trajetos.",
-        hosp:1250, alim:960, interno:400 }
+        hospNight:250, hospWhat:"apartamento na orla de Boa Viagem", hotelFilter:"class%3D4",
+        meals:{ cafe:30, almoco:65, jantar:65 }, mealsWhat:"restaurantes à la carte no almoço e no jantar",
+        transit:{ rides:0, fare:0, app:2, appFare:34 }, transitWhat:"2 corridas de app por dia" }
     ]
   };
 
@@ -814,12 +894,59 @@ function normalize(json){
   return {
     meta: json.meta || {},
     regions: ordem.filter(r => porRegiao[r]).map(r => ({ name:r, ufs:porRegiao[r] })),
-    tiers: (json.tiers || []).map(t => ({
-      key:t.key, name:t.name, cls:t.cls || classes[t.key] || "tier-econ",
-      desc:t.desc || "",
-      hosp:Number(t.hosp)||0, alim:Number(t.alim)||0, interno:Number(t.interno)||0
-    }))
+    tiers: (json.tiers || []).map(t => {
+      const meals = t.meals || {};
+      const transit = t.transit || {};
+
+      // Custo de um dia de refeições e de um dia de deslocamento.
+      const mealsDay = (Number(meals.cafe)||0) + (Number(meals.almoco)||0) + (Number(meals.jantar)||0);
+      const transitDay = (Number(transit.rides)||0) * (Number(transit.fare)||0) +
+                         (Number(transit.app)||0)   * (Number(transit.appFare)||0);
+
+      return {
+        key:t.key, name:t.name, cls:t.cls || classes[t.key] || "tier-econ",
+        desc:t.desc || "",
+
+        // unitários (guardados para a memória de cálculo na tela)
+        hospNight:Number(t.hospNight)||0, hospWhat:t.hospWhat || "",
+        hotelFilter:t.hotelFilter || "",
+        meals, mealsDay, mealsWhat:t.mealsWhat || "",
+        transit, transitDay, transitWhat:t.transitWhat || "",
+
+        // totais do período — se o backend mandar o total fechado, ele vence
+        hosp:    Number(t.hosp)    || (Number(t.hospNight)||0) * EVENT.nights,
+        alim:    Number(t.alim)    || mealsDay   * EVENT.days,
+        interno: Number(t.interno) || transitDay * EVENT.days
+      };
+    })
   };
+}
+
+/* ==========================================================================
+   LINKS DE ORÇAMENTO
+   Levam para a busca já preenchida com origem, destino e as datas do EVENT,
+   para o congressista conferir o preço real na fonte.
+   ========================================================================== */
+function flightsUrl(iata){
+  return "https://www.google.com/travel/flights?q=" + encodeURIComponent(
+    "voos de " + iata + " para " + EVENT.iata +
+    " ida " + EVENT.departISO + " volta " + EVENT.returnISO);
+}
+function kayakUrl(iata){
+  return "https://www.kayak.com.br/flights/" + iata + "-" + EVENT.iata +
+         "/" + EVENT.departISO + "/" + EVENT.returnISO;
+}
+function hotelsUrl(tier){
+  return "https://www.booking.com/searchresults.html?ss=" +
+         encodeURIComponent("Boa Viagem, Recife") +
+         "&checkin=" + EVENT.departISO + "&checkout=" + EVENT.returnISO +
+         "&group_adults=1&no_rooms=1" +
+         (tier.hotelFilter ? "&nflt=" + tier.hotelFilter : "");
+}
+function routeUrl(venue){
+  return "https://www.google.com/maps/dir/" +
+         encodeURIComponent("Boa Viagem, Recife - PE") + "/" +
+         encodeURIComponent(venue.maps || venue.name);
 }
 
 /* ==========================================================================
@@ -879,10 +1006,21 @@ function renderDataBadge(){
   }
   const live = dataSource === "api";
   badge.classList.remove("live");
-  badge.innerHTML = '<span class="dot"></span> Tarifas: <b>' + (live ? "em tempo real" : "base simulada") + "</b>";
+
+  // "base simulada" não é erro: é o fallback previsto enquanto o endpoint real
+  // não está configurado. O texto deixa isso explícito para ninguém ler como falha.
+  badge.innerHTML = '<span class="dot"></span> Tarifas: <b>' +
+                    (live ? "em tempo real" : "base de referência") + "</b>";
+  badge.title = live
+    ? "Servidas por " + API_ENDPOINT
+    : "O endpoint de exemplo ainda não foi trocado pelo backend real, então o painel usa a base interna.";
+
   pill.className = "src-pill" + (live ? "" : " sim");
-  pill.innerHTML = '<span class="dot"></span> fonte: ' + (live ? "API " + API_ENDPOINT : "payload simulado (API não conectada)") +
-                   (DATA && DATA.meta && DATA.meta.atualizado_em ? " | atualizado em " + DATA.meta.atualizado_em : "");
+  pill.innerHTML = '<span class="dot"></span> fonte: ' +
+    (live
+      ? "API " + API_ENDPOINT
+      : "base interna — API real ainda não configurada em API_ENDPOINT") +
+    (DATA && DATA.meta && DATA.meta.atualizado_em ? " | atualizado em " + DATA.meta.atualizado_em : "");
 }
 
 function renderRegions(){
@@ -949,6 +1087,7 @@ function renderVenues(){
       renderVenues();
       renderVenueBadge();
       renderTiers();
+      renderCalc(); // o fator da sede entra na conta do transporte interno
     });
     grid.appendChild(btn);
   });
@@ -1090,11 +1229,36 @@ function renderTiers(){
     // O transporte interno varia com a distância da sede até a rede hoteleira.
     const interno = Math.round(tier.interno * selectedVenue.factor);
 
+    const src = (url, txt) => ' <a class="line-src" href="' + url +
+                              '" target="_blank" rel="noopener">' + txt + ' &#8599;</a>';
+
     const items = [
-      { key:"fare",    label:"Passagem (ida e volta)",                  value:fare,       display: fare ? fmt(fare) : "—" },
-      { key:"hosp",    label:"Hospedagem (" + EVENT.nights + " noites)", value:tier.hosp,  display: fmt(tier.hosp) },
-      { key:"alim",    label:"Alimentação (" + EVENT.days + " dias)",    value:tier.alim,  display: fmt(tier.alim) },
-      { key:"interno", label:"Transporte interno (" + EVENT.days + " dias)", value:interno, display: fmt(interno) }
+      { key:"fare", label:"Passagem (ida e volta)",
+        value:fare, display: fare ? fmt(fare) : "—",
+        math: selected.host
+          ? "federação anfitriã — sem custo aéreo"
+          : "média da faixa " + fmt(selected.low) + "–" + fmt(selected.high) +
+            (fareMultiplier(daysToEvent()) > 1
+              ? " +" + Math.round((fareMultiplier(daysToEvent()) - 1) * 100) + "% de sazonalidade"
+              : "") +
+            src(flightsUrl(selected.iata), "Google Flights") +
+            src(kayakUrl(selected.iata), "Kayak") },
+
+      { key:"hosp", label:"Hospedagem (" + EVENT.nights + " noites)",
+        value:tier.hosp, display: fmt(tier.hosp),
+        math: EVENT.nights + " × " + fmt(tier.hospNight) + "/noite · " + tier.hospWhat +
+              src(hotelsUrl(tier), "Booking") },
+
+      { key:"alim", label:"Alimentação (" + EVENT.days + " dias)",
+        value:tier.alim, display: fmt(tier.alim),
+        math: EVENT.days + " × " + fmt(tier.mealsDay) + "/dia · café " + fmt(tier.meals.cafe) +
+              " + almoço " + fmt(tier.meals.almoco) + " + jantar " + fmt(tier.meals.jantar) },
+
+      { key:"interno", label:"Transporte interno (" + EVENT.days + " dias)",
+        value:interno, display: fmt(interno),
+        math: EVENT.days + " × " + fmt(tier.transitDay) + "/dia × " +
+              selectedVenue.factor.toFixed(2).replace(".", ",") + " (" + selectedVenue.name + ") · " +
+              tier.transitWhat + src(routeUrl(selectedVenue), "ver rota") }
     ];
 
     // Ingresso so entra na conta quando TICKET.enabled virar true.
@@ -1107,7 +1271,10 @@ function renderTiers(){
     const lines = items.map(it => {
       const on = costFilters[it.key] !== false;
       return '<div class="line' + (on ? "" : " excluded") + '">' +
-               "<span>" + it.label + (on ? "" : '<span class="excluded-tag">fora</span>') + "</span>" +
+               '<span class="line-label">' + it.label +
+                 (on ? "" : '<span class="excluded-tag">fora</span>') +
+                 (it.math ? '<span class="line-math">' + it.math + "</span>" : "") +
+               "</span>" +
                '<span class="val">' + it.display + "</span>" +
              "</div>";
     }).join("");
@@ -1129,6 +1296,64 @@ function renderTiers(){
       "</div>";
     wrap.appendChild(card);
   });
+}
+
+/* Explica, com os números que estão na tela, de onde saem os dois custos que
+   não vêm de uma busca externa: alimentação e transporte interno. */
+function renderCalc(){
+  const el = document.getElementById("calc");
+  if (!DATA || !DATA.tiers.length){ el.innerHTML = ""; return; }
+
+  const alimRows = DATA.tiers.map(t =>
+    '<div class="calc-row">' +
+      '<span class="cr-name">' + t.name + "</span>" +
+      '<span class="cr-math">' + fmt(t.meals.cafe) + " + " + fmt(t.meals.almoco) + " + " +
+        fmt(t.meals.jantar) + " = " + fmt(t.mealsDay) + "/dia × " + EVENT.days +
+        " = <b>" + fmt(t.alim) + "</b></span>" +
+    "</div>").join("");
+
+  const transpRows = DATA.tiers.map(t => {
+    const parts = [];
+    if (t.transit.rides) parts.push(t.transit.rides + " × " + fmt(t.transit.fare));
+    if (t.transit.app)   parts.push(t.transit.app + " × " + fmt(t.transit.appFare));
+    return '<div class="calc-row">' +
+      '<span class="cr-name">' + t.name + "</span>" +
+      '<span class="cr-math">' + parts.join(" + ") + " = " + fmt(t.transitDay) + "/dia × " +
+        EVENT.days + " × " + selectedVenue.factor.toFixed(2).replace(".", ",") +
+        " = <b>" + fmt(Math.round(t.interno * selectedVenue.factor)) + "</b></span>" +
+    "</div>";
+  }).join("");
+
+  const fatores = VENUES.map(v =>
+    v.name + " " + v.factor.toFixed(2).replace(".", ",")).join(" · ");
+
+  el.innerHTML =
+    '<div class="calc-block calc-alim">' +
+      "<h3>Alimentação</h3>" +
+      '<p class="calc-intro">Três refeições por dia, durante os ' + EVENT.days +
+        " dias de estadia. Não há desconto por grupo: o valor por pessoa é o mesmo " +
+        "independente do tamanho da delegação.</p>" +
+      '<div class="formula">alimentação = (café + almoço + jantar) × ' + EVENT.days + " dias</div>" +
+      '<div class="calc-rows">' + alimRows + "</div>" +
+      '<p class="calc-foot">O que muda entre os cenários é o tipo de refeição: ' +
+        DATA.tiers.map(t => "<b>" + t.name + "</b> = " + t.mealsWhat).join("; ") + ".</p>" +
+    "</div>" +
+
+    '<div class="calc-block calc-transp">' +
+      "<h3>Transporte interno</h3>" +
+      '<p class="calc-intro">Deslocamentos diários entre a hospedagem em Boa Viagem e a sede, ' +
+        "durante os " + EVENT.days + " dias. O resultado é multiplicado pelo <b>fator da sede</b>, " +
+        "que reflete a distância de cada candidata.</p>" +
+      '<div class="formula">transporte = (embarques × tarifa + corridas × preço) × ' +
+        EVENT.days + " dias × fator da sede</div>" +
+      '<div class="calc-rows">' + transpRows + "</div>" +
+      '<p class="calc-foot">Sede selecionada: <b>' + selectedVenue.name + "</b> (~" +
+        selectedVenue.distKm + " km de Boa Viagem, fator " +
+        selectedVenue.factor.toFixed(2).replace(".", ",") + "). " +
+        "O fator sai de <b>1 + (km ÷ 6 − 1) × 0,30</b>, tomando o Geraldão como referência: " +
+        "dobrar a distância não dobra o gasto, porque parte do trajeto é a mesma tarifa de ônibus. " +
+        "Fatores: " + fatores + ".</p>" +
+    "</div>";
 }
 
 /* ==========================================================================
@@ -1169,6 +1394,8 @@ async function init(){
   const todas = DATA.regions.flatMap(r => r.ufs);
   const padrao = todas.find(u => u.uf === "SP") || todas.find(u => !u.host) || todas[0];
   if (padrao) selectUF(padrao);
+
+  renderCalc();
 
   setInterval(renderCountdown, 3600000); // recalcula a contagem a cada hora
 }

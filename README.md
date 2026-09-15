@@ -45,7 +45,13 @@ As tarifas não são mais estáticas. Toda a camada de dados fica em `loadDynami
 
 Enquanto a API não existir, `loadDynamicData()` cai automaticamente no payload de
 `simulatedPayload()` e o painel continua funcionando. O selo no rodapé mostra qual fonte
-está em uso (`API` ou `payload simulado`).
+está em uso.
+
+> **O painel diz "base de referência" — isso é erro?** Não. `api.exemplo.com` é um endereço
+> fictício, então o `fetch()` falha no DNS, o `catch` assume e o painel usa a base interna.
+> É o fallback projetado: o painel nunca quebra enquanto o backend não existe. Assim que
+> `API_ENDPOINT` apontar para um serviço real que responda o contrato abaixo, o selo vira
+> "em tempo real" sozinho.
 
 ### Contrato do JSON
 
@@ -60,16 +66,56 @@ Sua query no BigQuery deve devolver exatamente este shape:
   ],
   "tiers": [
     { "key": "econ", "name": "Econômico", "desc": "...",
-      "hosp": 350, "alim": 360, "interno": 100 }
+      "hospNight": 70, "hospWhat": "cama em quarto compartilhado", "hotelFilter": "ht_id%3D203",
+      "meals":   { "cafe": 12, "almoco": 25, "jantar": 23 },
+      "mealsWhat": "padaria, prato feito e lanche à noite",
+      "transit": { "rides": 4, "fare": 4.90, "app": 0, "appFare": 0 },
+      "transitWhat": "4 embarques de ônibus/metrô por dia" }
   ]
 }
 ```
 
 - `low` / `high`: faixa da passagem **ida e volta** em BRL, com 8+ semanas de antecedência.
 - `host: true`: federação anfitriã (PE) — zera o custo aéreo.
-- `hosp`: 5 pernoites · `alim` e `interno`: 6 dias. O `interno` ainda é multiplicado pelo
-  fator da sede escolhida.
+- Os cenários são descritos por **valor unitário**, não por total fechado. `normalize()`
+  multiplica pelas noites/dias do `EVENT`, e é isso que permite mostrar a memória de
+  cálculo na tela. Se você mandar `hosp`, `alim` ou `interno` já fechados, eles vencem.
 - As chaves são ASCII de propósito (`regiao`, `hosp`, `alim`) para facilitar a serialização.
+
+## Como os custos são calculados
+
+**Passagem e hospedagem** vêm de busca externa, e cada linha do cenário traz o link já
+preenchido com origem, destino e datas: Google Flights e Kayak para o voo, Booking para a
+hospedagem (filtrado por `hotelFilter` — hostel, 3★ ou 4★).
+
+**Alimentação** — três refeições por dia, sem desconto por grupo:
+
+```
+alimentação = (café + almoço + jantar) × 6 dias
+```
+
+| Cenário | Café | Almoço | Jantar | Por dia | Total |
+|---|---|---|---|---|---|
+| Econômico | 12 | 25 | 23 | 60 | 360 |
+| Intermediário | 18 | 42 | 35 | 95 | 570 |
+| Conforto | 30 | 65 | 65 | 160 | 960 |
+
+**Transporte interno** — deslocamentos diários entre Boa Viagem e a sede:
+
+```
+transporte = (embarques × tarifa + corridas × preço) × 6 dias × fator da sede
+```
+
+| Cenário | Composição diária | Por dia | Total (fator 1,00) |
+|---|---|---|---|
+| Econômico | 4 × R$ 4,90 (ônibus/metrô) | 19,60 | 118 |
+| Intermediário | 2 × R$ 4,90 + 1 × R$ 24 (app) | 33,80 | 203 |
+| Conforto | 2 × R$ 34 (app) | 68,00 | 408 |
+
+O **fator da sede** sai de `1 + (km ÷ 6 − 1) × 0,30`, com o Geraldão (~6 km) como
+referência. O amortecimento de 0,30 existe porque dobrar a distância não dobra o gasto:
+parte do trajeto é a mesma tarifa de ônibus, e a corrida de app cresce menos que
+proporcionalmente à distância.
 
 ## Regra de sazonalidade
 
