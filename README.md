@@ -29,13 +29,44 @@ Boa Viagem:
 | Centro de Convenções (Cecon) | Salgadinho, Olinda | 13 | 1,20 |
 | Classic Hall | Salgadinho, Olinda | 14 | 1,25 |
 
-## Plugando o backend (Python / BigQuery)
+## A API (já funcionando)
 
-As tarifas não são mais estáticas. Toda a camada de dados fica em `loadDynamicData()`:
+O painel faz um `fetch()` real. O endpoint ativo é o próprio GitHub Pages deste
+repositório, que serve o JSON do contrato e responde com `Access-Control-Allow-Origin: *`
+— então a chamada funciona de qualquer domínio:
+
+```
+https://victoralbertins.github.io/enej27-painel-custos/data/cotacoes-enej27.json
+```
+
+Esse arquivo é gerado por [`tools/gerar_cotacoes.py`](tools/gerar_cotacoes.py):
+
+```bash
+python tools/gerar_cotacoes.py
+```
+
+O script é a **ponte para o BigQuery**: a estrutura de saída é exatamente a que o painel
+espera, então trocar as constantes `VOOS`/`CENARIOS` por uma query preserva o contrato.
+
+```python
+from google.cloud import bigquery
+client = bigquery.Client()
+voos = [dict(r) for r in client.query(SQL_COTACOES).result()]
+# o resto do script segue igual
+```
+
+> **Limite honesto:** isto é um endpoint HTTP real servindo o contrato, não preço de
+> passagem ao vivo. Cotação de companhia aérea em tempo real exige API paga com chave
+> (Amadeus, Kiwi, Skyscanner), e chave não pode morar numa página estática pública — daí
+> o backend próprio. Os links de cada cenário levam à cotação real na fonte.
+
+## Plugando o seu backend (Python / BigQuery)
+
+Toda a camada de dados fica em `loadDynamicData()`:
 
 1. **Endpoint** — troque a constante no topo do `<script>`:
    ```js
-   const API_ENDPOINT = "https://api.exemplo.com/cotacoes-enej27"; // <<< TROQUE AQUI
+   const API_ENDPOINT = "https://enej27-api.suaempresa.com/v1/cotacoes"; // <<< TROQUE AQUI
    ```
 2. **Autenticação** — headers em `API_HEADERS`. Como o arquivo é público, não coloque
    chave secreta aqui: use uma API pública de leitura ou um proxy que injete a credencial.
