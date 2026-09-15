@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Custos ENEJ 27</title>
+<meta name="description" content="Estimativa de passagem, hospedagem, alimentação e transporte interno para o ENEJ 27 em Recife, por estado de origem, sede e tamanho da delegação.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===================================================================
+   ENEJ 27 - RECIFE | PAINEL DE CUSTOS DO CONGRESSISTA
+   Paleta oficial do edital: azul escuro, azul claro, amarelo e verde.
+   =================================================================== */
+
+:root{
+  /* --- marca --- */
+  --navy:#05224A;
+  --navy-deep:#031634;
+  --blue:#3B7DF5;
+  --blue-soft:#E4EDFE;
+  --yellow:#FFC42D;
+  --yellow-soft:#FFF3D2;
+  --green:#1E7A3C;
+  --green-bright:#34A853;
+  --green-soft:#E2F3E7;
+  --green-deep:#04380F;
+
+  /* --- superficies (neutros com vies azul, nunca cinza puro) --- */
+  --ground:#F0F2F5;
+  --surface:#FFFFFF;
+  --surface-sunk:#F7F9FC;
+  --ink:#05224A;
+  --ink-soft:#3A4F6D;
+  --muted:#65788F;
+  --line:#DCE3EC;
+  --line-strong:#C3CEDD;
+
+  /* --- tinta sobre painel navy --- */
+  --on-navy:#EEF3FA;
+  --on-navy-muted:#A9BDD8;
+
+  /* --- semantica (separada do acento) --- */
+  --ok:#1E7A3C;
+  --warn:#B26A00;
+  --warn-soft:#FFF0D6;
+
+  --shadow-md:0 10px 30px rgba(5,34,74,.09), 0 2px 6px rgba(5,34,74,.05);
+  --shadow-navy:0 14px 36px rgba(5,34,74,.26);
+
+  --radius:14px;
+  --radius-lg:20px;
+
+  --font-display:"Outfit","Segoe UI",system-ui,sans-serif;
+  --font-body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono","SFMono-Regular",Consolas,monospace;
+}
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --navy:#0B2A54;
+    --navy-deep:#061A36;
+    --blue:#6FA3FF;
+    --blue-soft:#12325E;
+    --yellow:#FFCF4F;
+    --yellow-soft:#3A2E0B;
+    --green:#5BC77A;
+    --green-bright:#5BC77A;
+    --green-soft:#0E3A1E;
+    --green-deep:#0B3A14;
+
+    --ground:#061527;
+    --surface:#0C2242;
+    --surface-sunk:#0A1C37;
+    --ink:#E8EEF7;
+    --ink-soft:#C2D2E6;
+    --muted:#93A6C0;
+    --line:#1C3A63;
+    --line-strong:#2A4D7D;
+
+    --on-navy:#EEF3FA;
+    --on-navy-muted:#A9BDD8;
+
+    --ok:#5BC77A;
+    --warn:#FFC04D;
+    --warn-soft:#3A2A08;
+
+    --shadow-md:0 10px 30px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.3);
+    --shadow-navy:0 14px 36px rgba(0,0,0,.5);
+  }
+}
+
+:root[data-theme="dark"]{
+  --navy:#0B2A54;
+  --navy-deep:#061A36;
+  --blue:#6FA3FF;
+  --blue-soft:#12325E;
+  --yellow:#FFCF4F;
+  --yellow-soft:#3A2E0B;
+  --green:#5BC77A;
+  --green-bright:#5BC77A;
+  --green-soft:#0E3A1E;
+  --green-deep:#0B3A14;
+
+  --ground:#061527;
+  --surface:#0C2242;
+  --surface-sunk:#0A1C37;
+  --ink:#E8EEF7;
+  --ink-soft:#C2D2E6;
+  --muted:#93A6C0;
+  --line:#1C3A63;
+  --line-strong:#2A4D7D;
+
+  --on-navy:#EEF3FA;
+  --on-navy-muted:#A9BDD8;
+
+  --ok:#5BC77A;
+  --warn:#FFC04D;
+  --warn-soft:#3A2A08;
+
+  --shadow-md:0 10px 30px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.3);
+  --shadow-navy:0 14px 36px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:15px;
+  line-height:1.5;
+  padding-bottom:56px;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:6px;}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;transition-duration:.001ms !important;}
+}
+
+/* ============================ HEADER ============================ */
+header{
+  background:var(--navy-deep);
+  color:var(--on-navy);
+  position:relative;
+  overflow:hidden;
+  padding:34px 24px 54px;
+}
+.header-inner{
+  max-width:1180px;margin:0 auto;position:relative;z-index:2;
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;align-items:start;
+}
+@media (max-width:900px){ .header-inner{grid-template-columns:1fr;} }
+
+.eyebrow{
+  font-family:var(--font-body);
+  text-transform:uppercase;letter-spacing:.2em;font-size:11.5px;font-weight:600;
+  color:var(--yellow);margin:0 0 12px;
+}
+h1{
+  margin:0;font-size:clamp(30px,4.6vw,48px);font-weight:800;line-height:1.02;letter-spacing:-.02em;
+}
+h1 .accent{color:var(--yellow);}
+header .sub{
+  margin:14px 0 0;max-width:62ch;font-size:14.5px;line-height:1.6;color:var(--on-navy-muted);
+}
+
+.badge-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px;}
+.badge{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.18);
+  color:var(--on-navy);
+  font-size:12.5px;font-weight:500;padding:7px 13px;border-radius:100px;
+}
+.badge b{color:var(--yellow);font-weight:600;}
+.badge .dot{width:7px;height:7px;border-radius:50%;background:var(--green-bright);flex:none;}
+.badge.countdown{background:rgba(52,168,83,.16);border-color:rgba(52,168,83,.5);}
+.badge.countdown.urgent{background:rgba(255,196,45,.16);border-color:var(--yellow);}
+.badge.countdown.urgent .dot{background:var(--yellow);}
+.badge.live .dot{animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+
+/* motivo geometrico do manual de marca (quadrantes + listras) */
+.motif{
+  display:grid;grid-template-columns:repeat(3,42px);grid-template-rows:repeat(3,42px);flex:none;
+}
+@media (max-width:900px){ .motif{display:none;} }
+.motif i{display:block;}
+.m-yellow{background:var(--yellow);}
+.m-blue{background:var(--blue);}
+.m-green{background:var(--green-bright);}
+.m-greenD{background:var(--green-deep);}
+.m-white{background:#FFFFFF;}
+.q-br{border-radius:0 0 100% 0;}
+.q-bl{border-radius:0 0 0 100%;}
+.q-tr{border-radius:0 100% 0 0;}
+.q-tl{border-radius:100% 0 0 0;}
+.pill-b{border-radius:0 0 100px 100px;}
+.stripe{background:repeating-linear-gradient(135deg,var(--blue) 0 9px,#FFFFFF 9px 18px);}
+
+header::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:8px;
+  background:linear-gradient(90deg,
+    var(--green-bright) 0 25%, var(--yellow) 25% 50%, var(--blue) 50% 75%, var(--green-deep) 75% 100%);
+}
+
+/* ============================ LAYOUT ============================ */
+main{max-width:1180px;margin:-30px auto 0;padding:0 24px;position:relative;z-index:3;}
+.grid{display:grid;grid-template-columns:292px minmax(0,1fr);gap:20px;align-items:start;}
+@media (max-width:900px){ .grid{grid-template-columns:1fr;} }
+
+.panel{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-md);
+}
+
+.section-head h2{
+  font-size:15px;font-weight:700;margin:0;letter-spacing:-.01em;color:var(--ink);
+}
+.hint{font-size:12.5px;color:var(--muted);margin:4px 0 0;line-height:1.5;}
+
+/* --------------------- SELETOR DE ORIGEM --------------------- */
+.selector{padding:20px 18px 22px;}
+#regions{margin-top:16px;}
+.region-block + .region-block{margin-top:16px;}
+.region-label{
+  font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--muted);margin:0 0 8px;display:flex;align-items:center;gap:7px;
+}
+.region-label::before{content:"";width:16px;height:2px;border-radius:2px;background:var(--blue);}
+.region-block:nth-child(2) .region-label::before{background:var(--green-bright);}
+.region-block:nth-child(3) .region-label::before{background:var(--yellow);}
+.region-block:nth-child(4) .region-label::before{background:var(--navy);}
+.region-block:nth-child(5) .region-label::before{background:var(--blue);}
+
+.uf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.uf-btn{
+  font-family:var(--font-body);font-weight:600;font-size:12.5px;
+  border:1.5px solid var(--line);background:var(--surface-sunk);color:var(--ink-soft);
+  padding:9px 0;border-radius:10px;cursor:pointer;
+  transition:border-color .15s ease, background .15s ease, color .15s ease, transform .15s ease;
+}
+.uf-btn:hover{border-color:var(--blue);color:var(--ink);transform:translateY(-1px);}
+.uf-btn.active{
+  background:var(--navy);border-color:var(--navy);color:#FFFFFF;
+  box-shadow:0 4px 12px rgba(5,34,74,.28);
+}
+.uf-btn.host{background:var(--yellow-soft);border-color:var(--yellow);color:var(--ink);}
+.uf-btn.host.active{background:var(--yellow);border-color:var(--yellow);color:#05224A;}
+.uf-btn[disabled]{opacity:.45;cursor:progress;}
+
+.legend{
+  display:flex;align-items:center;gap:7px;margin:16px 0 0;
+  font-size:11.5px;color:var(--muted);
+}
+.legend .swatch{width:12px;height:12px;border-radius:4px;background:var(--yellow);flex:none;}
+
+/* --------------------- CARTAO DE EMBARQUE --------------------- */
+.ticket-wrap{padding:20px;}
+.ticket{
+  display:grid;grid-template-columns:1fr auto 1fr;
+  background:var(--navy);color:var(--on-navy);
+  border-radius:var(--radius);overflow:hidden;position:relative;
+  box-shadow:var(--shadow-navy);
+}
+.ticket::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(circle at 96% -20%, rgba(255,196,45,.30), transparent 42%),
+    radial-gradient(circle at 2% 118%, rgba(59,125,245,.34), transparent 46%);
+}
+.ticket-side{padding:22px;position:relative;z-index:1;min-width:0;}
+.ticket-side.dest{text-align:right;}
+.t-label{
+  font-size:10px;text-transform:uppercase;letter-spacing:.16em;font-weight:700;
+  color:var(--yellow);margin:0 0 7px;
+}
+.t-iata{
+  font-family:var(--font-mono);font-size:clamp(26px,3.6vw,38px);font-weight:600;
+  letter-spacing:.06em;margin:0;line-height:1;color:#FFFFFF;
+}
+.t-city{font-family:var(--font-display);font-size:16px;font-weight:600;margin:6px 0 0;line-height:1.2;}
+.t-sub{font-size:12px;color:var(--on-navy-muted);margin:3px 0 0;}
+.ticket-mid{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:20px 10px;position:relative;z-index:1;gap:6px;
+}
+.ticket-mid .plane{font-size:17px;color:var(--yellow);}
+.dashline{
+  width:1px;flex:1;min-height:34px;
+  background:repeating-linear-gradient(180deg,rgba(238,243,250,.6) 0 5px,transparent 5px 11px);
+}
+
+.ticket-tear{
+  grid-column:1/-1;position:relative;z-index:1;
+  display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;
+  padding:18px 22px;background:rgba(0,0,0,.20);
+  border-top:1px dashed rgba(238,243,250,.28);
+}
+.fare-label{
+  font-size:10.5px;text-transform:uppercase;letter-spacing:.13em;font-weight:700;
+  color:var(--on-navy-muted);margin:0;
+}
+.fare-value{
+  font-family:var(--font-mono);font-size:clamp(25px,3.5vw,34px);font-weight:600;
+  color:var(--yellow);margin:3px 0 0;letter-spacing:-.01em;font-variant-numeric:tabular-nums;
+}
+.fare-range{font-family:var(--font-mono);font-size:12px;color:var(--on-navy-muted);margin:3px 0 0;}
+.book-window{
+  font-size:12.5px;line-height:1.5;max-width:30ch;color:var(--on-navy);
+  border-left:3px solid var(--green-bright);padding-left:11px;
+}
+.book-window.warn{border-left-color:var(--yellow);}
+.book-window b{color:var(--yellow);font-weight:600;}
+
+.ticket-empty{
+  border-radius:var(--radius);background:var(--navy);color:var(--on-navy);
+  padding:26px 24px;font-size:14px;line-height:1.6;box-shadow:var(--shadow-navy);
+}
+.ticket-empty b{color:var(--yellow);}
+
+/* estado de carregamento das tarifas */
+.skeleton{
+  border-radius:var(--radius);background:var(--navy);box-shadow:var(--shadow-navy);
+  padding:24px;display:flex;flex-direction:column;gap:14px;
+}
+.sk-bar{height:13px;border-radius:7px;background:rgba(238,243,250,.14);position:relative;overflow:hidden;}
+.sk-bar.lg{height:30px;width:46%;}
+.sk-bar.md{width:66%;}
+.sk-bar.sm{width:34%;}
+.sk-bar::after{
+  content:"";position:absolute;inset:0;transform:translateX(-100%);
+  background:linear-gradient(90deg,transparent,rgba(255,196,45,.30),transparent);
+  animation:sweep 1.4s ease-in-out infinite;
+}
+@keyframes sweep{100%{transform:translateX(100%);}}
+.loading-tag{
+  display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:600;
+  color:var(--yellow);text-transform:uppercase;letter-spacing:.1em;
+}
+.spinner{
+  width:13px;height:13px;border-radius:50%;flex:none;
+  border:2px solid rgba(255,196,45,.3);border-top-color:var(--yellow);
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* --------------------- CONTROLES --------------------- */
+.controls{border-top:1px solid var(--line);padding:20px;display:flex;flex-direction:column;gap:22px;}
+.control-block{display:flex;flex-direction:column;gap:10px;}
+.control-block .section-head h2{font-size:13.5px;}
+
+.venue-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+@media (max-width:620px){ .venue-grid{grid-template-columns:1fr;} }
+.venue-btn{
+  font-family:var(--font-body);text-align:left;cursor:pointer;
+  border:1.5px solid var(--line);background:var(--surface-sunk);color:var(--ink);
+  border-radius:12px;padding:11px 13px;display:flex;flex-direction:column;gap:2px;
+  transition:border-color .15s ease, background .15s ease;
+}
+.venue-btn:hover{border-color:var(--green-bright);}
+.venue-btn .v-name{font-weight:600;font-size:13.5px;line-height:1.25;}
+.venue-btn .v-meta{font-size:11.5px;color:var(--muted);}
+.venue-btn.active{border-color:var(--green-bright);background:var(--green-soft);}
+.venue-btn.active .v-name,.venue-btn.active .v-meta{color:var(--green);}
+
+.group-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.stepper{
+  display:inline-flex;align-items:stretch;border:1.5px solid var(--line);
+  border-radius:11px;overflow:hidden;background:var(--surface-sunk);
+}
+.stepper button{
+  font-family:var(--font-body);font-size:17px;font-weight:600;line-height:1;
+  width:36px;border:0;background:transparent;color:var(--blue);cursor:pointer;
+}
+.stepper button:hover{background:var(--blue-soft);}
+.stepper input{
+  font-family:var(--font-mono);font-size:16px;font-weight:600;width:62px;text-align:center;
+  border:0;border-left:1.5px solid var(--line);border-right:1.5px solid var(--line);
+  background:var(--surface);color:var(--ink);padding:8px 4px;font-variant-numeric:tabular-nums;
+}
+.stepper input:focus{outline:none;box-shadow:inset 0 0 0 2px var(--blue);}
+.group-hint{font-size:12px;color:var(--muted);}
+
+.filter-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.filter-chip{
+  display:inline-flex;align-items:center;gap:8px;cursor:pointer;user-select:none;
+  background:var(--blue-soft);border:1.5px solid transparent;color:var(--ink);
+  border-radius:100px;padding:7px 14px 7px 11px;font-size:12.5px;font-weight:600;
+  transition:background .15s ease, border-color .15s ease, color .15s ease;
+}
+.filter-chip:hover{border-color:var(--blue);}
+.filter-chip input{accent-color:var(--blue);width:15px;height:15px;cursor:pointer;flex:none;}
+.filter-chip.off{background:transparent;border:1.5px dashed var(--line-strong);color:var(--muted);}
+.filter-note{font-size:12px;color:var(--muted);margin:0;line-height:1.5;}
+.filter-note b{color:var(--warn);font-weight:600;}
+
+/* --------------------- CENARIOS --------------------- */
+.tiers-head{margin:24px 4px 12px;display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.tiers-head h2{
+  font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.11em;margin:0;color:var(--muted);
+}
+.tiers-head .ctx{font-size:12px;color:var(--muted);font-family:var(--font-mono);}
+.tiers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding:18px;}
+@media (max-width:820px){ .tiers{grid-template-columns:1fr;} }
+
+.tier-card{
+  background:var(--surface-sunk);border:1px solid var(--line);border-radius:var(--radius);
+  padding:18px 16px 16px;display:flex;flex-direction:column;position:relative;overflow:hidden;
+}
+.tier-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;}
+.tier-econ::before{background:var(--green-bright);}
+.tier-inter::before{background:var(--blue);}
+.tier-conforto::before{background:var(--yellow);}
+
+.tag{
+  display:inline-flex;width:fit-content;font-size:10.5px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;padding:5px 11px;border-radius:100px;margin-bottom:11px;
+}
+.tier-econ .tag{background:var(--green-soft);color:var(--green);}
+.tier-inter .tag{background:var(--blue-soft);color:var(--blue);}
+.tier-conforto .tag{background:var(--yellow-soft);color:var(--warn);}
+
+.tier-card h3{margin:0 0 4px;font-size:19px;font-weight:700;letter-spacing:-.01em;}
+.tier-desc{font-size:12px;color:var(--muted);margin:0 0 13px;line-height:1.45;}
+
+.line{
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  font-size:13px;padding:7px 0;border-bottom:1px solid var(--line);
+}
+.line span:first-child{color:var(--ink-soft);}
+.line .val{
+  font-family:var(--font-mono);font-weight:500;color:var(--ink);
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.line.excluded{opacity:.5;}
+.line.excluded .val{text-decoration:line-through;}
+.excluded-tag{
+  font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--warn);background:var(--warn-soft);padding:2px 6px;border-radius:5px;margin-left:6px;
+}
+
+.tier-total{
+  margin-top:14px;padding-top:13px;border-top:2px solid var(--line-strong);
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+}
+.tlabel{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);}
+.tvalue{
+  font-family:var(--font-mono);font-size:25px;font-weight:600;letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;
+}
+.tier-econ .tvalue{color:var(--green);}
+.tier-inter .tvalue{color:var(--blue);}
+.tier-conforto .tvalue{color:var(--warn);}
+
+.group-total{
+  margin-top:10px;padding:9px 11px;border-radius:10px;background:var(--surface);
+  border:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+}
+.glabel{font-size:11.5px;color:var(--muted);font-weight:500;}
+.gvalue{
+  font-family:var(--font-mono);font-size:16px;font-weight:600;color:var(--ink);
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+
+.empty-note{padding:26px 20px;color:var(--muted);font-size:13.5px;grid-column:1/-1;margin:0;}
+
+/* --------------------- RODAPE --------------------- */
+footer{max-width:1180px;margin:30px auto 0;padding:0 24px;}
+.foot-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px;}
+footer h4{
+  font-family:var(--font-display);font-size:11.5px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--ink);margin:0 0 7px;
+}
+footer p{font-size:11.5px;color:var(--muted);line-height:1.65;margin:0;}
+footer code{
+  font-family:var(--font-mono);font-size:11px;background:var(--surface);
+  border:1px solid var(--line);border-radius:5px;padding:1px 5px;color:var(--ink-soft);
+}
+.src-pill{
+  display:inline-flex;align-items:center;gap:7px;margin-top:16px;
+  font-size:11.5px;font-family:var(--font-mono);color:var(--muted);
+  background:var(--surface);border:1px solid var(--line);border-radius:100px;padding:5px 12px;
+}
+.src-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--green-bright);flex:none;}
+.src-pill.sim .dot{background:var(--yellow);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <p class="eyebrow">ENEJ 27 &middot; Recife &middot; Pernambuco</p>
+      <h1>Painel de Custos do <span class="accent">Congressista</span></h1>
+      <p class="sub">Escolha o estado de origem e a sede do evento para estimar passagem aérea, hospedagem, alimentação e transporte interno da sua delegação no maior encontro do Movimento Empresa Júnior.</p>
+      <div class="badge-row">
+        <span class="badge countdown" id="countdownBadge"><span class="dot"></span> Calculando&hellip;</span>
+        <span class="badge" id="venueBadge">Sede: <b>a definir</b></span>
+        <span class="badge">5 pernoites &middot; 6 dias</span>
+        <span class="badge live" id="dataBadge"><span class="dot"></span> Tarifas: <b>carregando</b></span>
+      </div>
+    </div>
+    <div class="motif" aria-hidden="true">
+      <i class="m-yellow q-br"></i><i class="m-blue stripe"></i><i class="m-green q-bl"></i>
+      <i class="m-white pill-b"></i><i class="m-greenD q-tr"></i><i class="m-yellow"></i>
+      <i class="m-blue q-tl"></i><i class="m-green"></i><i class="m-yellow q-tr"></i>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="grid">
+
+    <!-- ===================== SELETOR DE ORIGEM ===================== -->
+    <section class="panel selector" aria-labelledby="origemTitle">
+      <div class="section-head">
+        <h2 id="origemTitle">Estado de origem</h2>
+      </div>
+      <p class="hint">Toque na UF da sua EJ para atualizar o cartão de embarque e os cenários de gasto.</p>
+      <div id="regions"></div>
+      <p class="legend"><span class="swatch"></span> PE é a federação anfitriã</p>
+    </section>
+
+    <!-- ===================== CONTEUDO ===================== -->
+    <div>
+      <section class="panel" aria-labelledby="ticketTitle">
+        <h2 id="ticketTitle" class="sr-only" style="position:absolute;left:-9999px;">Estimativa de passagem aérea</h2>
+        <div class="ticket-wrap">
+          <div id="ticket"></div>
+        </div>
+
+        <div class="controls">
+          <!-- SEDE DO EVENTO -->
+          <div class="control-block">
+            <div class="section-head">
+              <h2>Sede do evento em Recife</h2>
+            </div>
+            <p class="hint">A sede ainda não foi confirmada. Simule as quatro candidatas &mdash; a distância até a rede hoteleira de Boa Viagem ajusta o custo de transporte interno.</p>
+            <div class="venue-grid" id="venueGrid" role="group" aria-label="Sede do evento"></div>
+          </div>
+
+          <!-- TAMANHO DA DELEGACAO -->
+          <div class="control-block">
+            <div class="section-head">
+              <h2>Tamanho da delegação</h2>
+            </div>
+            <div class="group-row">
+              <div class="stepper">
+                <button type="button" id="groupMinus" aria-label="Diminuir um congressista">&minus;</button>
+                <input type="number" id="groupSize" min="1" max="500" value="1" aria-label="Quantidade de congressistas">
+                <button type="button" id="groupPlus" aria-label="Adicionar um congressista">+</button>
+              </div>
+              <span class="group-hint">congressista(s) &mdash; atualiza o total do grupo em cada cenario</span>
+            </div>
+          </div>
+
+          <!-- FILTRO DE CUSTOS -->
+          <div class="control-block">
+            <div class="section-head">
+              <h2>Quais custos a EJ vai arcar?</h2>
+            </div>
+            <p class="hint">Desmarque o que não entra na conta da federação ou do núcleo &mdash; o total recalcula na hora.</p>
+            <div class="filter-chips" id="filterChips"></div>
+            <p class="filter-note" id="filterNote"></p>
+          </div>
+        </div>
+      </section>
+
+      <div class="tiers-head">
+        <h2 id="tiersTitle">Cenários de gasto</h2>
+        <span class="ctx" id="tiersCtx"></span>
+      </div>
+      <section class="panel">
+        <div class="tiers" id="tiers"></div>
+      </section>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="foot-grid">
+      <div>
+        <h4>Passagem aérea</h4>
+        <p>Valores de ida e volta até o Aeroporto Internacional dos Guararapes (REC), servidos pela API de cotações. Com 8 semanas ou mais de antecedência aplica-se a tarifa de referência; abaixo disso incide um acréscimo estimado de sazonalidade que chega a 80% na véspera.</p>
+      </div>
+      <div>
+        <h4>Estadia</h4>
+        <p>Hospedagem considera 5 pernoites na região de Boa Viagem. Alimentação e transporte interno consideram os 6 dias de estadia. O transporte interno é multiplicado pelo fator de deslocamento da sede escolhida.</p>
+      </div>
+      <div>
+        <h4>Ingresso</h4>
+        <p>Os lotes do ENEJ 27 ainda não foram divulgados, então o ingresso está <b>fora</b> da interface e do total. A constante <code>TICKET</code> no JS já está preparada para reativá-lo quando o valor sair.</p>
+      </div>
+      <div>
+        <h4>Dados</h4>
+        <p>As tarifas vem de <code>loadDynamicData()</code>, que consulta a API configurada em <code>API_ENDPOINT</code> e cai no payload simulado quando a API não responde. Reconfirme os valores próximo à data de compra.</p>
+      </div>
+    </div>
+    <span class="src-pill" id="srcPill"><span class="dot"></span> fonte: carregando</span>
+  </footer>
+</main>
+
+<script>
+/* ==========================================================================
+   ENEJ 27 - RECIFE | PAINEL DE CUSTOS DO CONGRESSISTA
+   ==========================================================================
+
+   >>> ONDE PLUGAR SEU BACKEND (Python / BigQuery) <<<
+
+   1. Troque API_ENDPOINT (logo abaixo) pela URL real do seu serviço.
+      Ex.: "https://enej27-api.suaempresa.com/v1/cotações"
+           ou um Cloud Function / Cloud Run em cima do BigQuery.
+
+   2. Sua API deve devolver JSON no formato descrito em simulatedPayload().
+      Enquanto ela não existir, loadDynamicData() usa o payload simulado
+      automaticamente, então o painel nunca quebra.
+
+   3. Se sua API exigir autenticacao, adicione o header em API_HEADERS.
+      Atenção: este arquivo é público, então não coloque chave secreta aqui.
+      Prefira uma API publica de leitura ou um proxy que injete a chave.
+
+   4. CORS: o backend precisa responder com
+      Access-Control-Allow-Origin para o domínio onde este painel está no ar.
+   ========================================================================== */
+
+const API_ENDPOINT = "https://api.exemplo.com/cotações-enej27"; // <<< TROQUE AQUI
+const API_HEADERS  = { "Accept": "application/json" };          // <<< headers/auth aqui
+const API_TIMEOUT_MS = 6000;
+
+/* ---------- PARÂMETROS DO EVENTO ----------
+   Datas oficiais do ENEJ 27 ainda não divulgadas: os valores abaixo são uma
+   hipótese de trabalho (mesma janela de agosto usada no ENEJ 26). Ajuste aqui
+   quando o edital sair e toda a interface acompanha. */
+const EVENT = {
+  name: "ENEJ 27",
+  city: "Recife",
+  uf: "PE",
+  iata: "REC",
+  airport: "Aeroporto Internacional dos Guararapes",
+  startISO: "2027-08-25T00:00:00",
+  window: "25 a 30 de agosto de 2027",
+  nights: 5,
+  days: 6
+};
+const EVENT_DATE = new Date(EVENT.startISO);
+
+/* ---------- INGRESSO ----------
+   Removido da interface e do calculo por enquanto (lotes não divulgados).
+   Para reativar: enabled = true e preencha price/installments. */
+const TICKET = { enabled: false, price: 0, installments: 12 };
+
+/* ---------- SEDES CANDIDATAS ----------
+   distKm  = distância aproximada até a rede hoteleira de Boa Viagem
+   factor  = multiplicador aplicado ao custo de transporte interno */
+const VENUES = [
+  { id:"geraldao", name:"Geraldão", area:"Imbiribeira, Recife", distKm:6,  factor:1.00 },
+  { id:"classichall", name:"Classic Hall", area:"Salgadinho, Olinda", distKm:14, factor:1.25 },
+  { id:"cecon", name:"Centro de Convenções (Cecon)", area:"Salgadinho, Olinda", distKm:13, factor:1.20 },
+  { id:"expocenter", name:"Recife Expo Center", area:"Salgadinho, Olinda", distKm:13, factor:1.18 }
+];
+
+/* ---------- ESTADO DA APLICACAO ---------- */
+let DATA = null;            // preenchido por loadDynamicData()
+let selected = null;        // UF escolhida
+let selectedVenue = VENUES[0];
+let groupSize = 1;
+let dataSource = "loading"; // "api" | "simulado" | "loading"
+
+const COST_FILTERS = [
+  { key:"fare",    label:"Passagem aérea" },
+  { key:"hosp",    label:"Hospedagem" },
+  { key:"alim",    label:"Alimentação" },
+  { key:"interno", label:"Transporte interno" }
+];
+let costFilters = { fare:true, hosp:true, alim:true, interno:true };
+
+/* ==========================================================================
+   CAMADA DE DADOS
+   ========================================================================== */
+
+/**
+ * Busca as cotações na API real. Se a API falhar, estourar o timeout ou
+ * devolver algo inválido, cai no payload simulado para o painel seguir util.
+ *
+ * Contrato esperado da resposta (mesmo shape de simulatedPayload):
+ * {
+ *   "meta":  { "moeda":"BRL", "atualizado_em":"2026-09-14", "fonte":"bigquery" },
+ *   "voos":  [ { "uf":"SP", "capital":"São Paulo", "iata":"GRU",
+ *                "low":600, "high":920, "host":false }, ... ],
+ *   "tiers": [ { "key":"econ", "name":"Econômico", "desc":"...",
+ *                "hosp":350, "alim":360, "interno":100 }, ... ]
+ * }
+ *
+ * @returns {Promise<Object>} payload normalizado e pronto para render
+ */
+async function loadDynamicData(){
+  try {
+    // AbortController evita que a UI fique presa se a API não responder.
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+
+    const res = await fetch(API_ENDPOINT, {
+      method: "GET",
+      headers: API_HEADERS,
+      signal: controller.signal
+    });
+    clearTimeout(timer);
+
+    if (!res.ok) throw new Error("HTTP " + res.status);
+
+    const json = await res.json();
+    if (!json || !Array.isArray(json.voos)) throw new Error("payload fora do contrato");
+
+    dataSource = "api";
+    return normalize(json);
+
+  } catch (err) {
+    // Fallback: mantem o painel funcional enquanto o backend não está pronto.
+    console.warn("[ENEJ27] API indisponível, usando cotações simuladas:", err.message);
+    dataSource = "simulado";
+    return normalize(await simulatedPayload());
+  }
+}
+
+/**
+ * Payload simulado - espelha exatamente o JSON que seu backend deve devolver.
+ * Use este objeto como especificacao da sua query no BigQuery.
+ * Tarifas em BRL, ida e volta, com 8+ semanas de antecedência, destino REC.
+ */
+function simulatedPayload(){
+  const payload = {
+    meta: { moeda:"BRL", atualizado_em:"2026-09-14", fonte:"simulado", destino:"REC" },
+    voos: [
+      // --- Norte ---
+      { uf:"AC", capital:"Rio Branco",    iata:"RBR", regiao:"Norte", low:1500, high:2100 },
+      { uf:"AP", capital:"Macapá",        iata:"MCP", regiao:"Norte", low:1100, high:1500 },
+      { uf:"AM", capital:"Manaus",        iata:"MAO", regiao:"Norte", low:1150, high:1600 },
+      { uf:"PA", capital:"Belém",         iata:"BEL", regiao:"Norte", low:750,  high:1050 },
+      { uf:"RO", capital:"Porto Velho",   iata:"PVH", regiao:"Norte", low:1350, high:1850 },
+      { uf:"RR", capital:"Boa Vista",     iata:"BVB", regiao:"Norte", low:1450, high:1950 },
+      { uf:"TO", capital:"Palmas",        iata:"PMW", regiao:"Norte", low:900,  high:1250 },
+      // --- Nordeste ---
+      { uf:"AL", capital:"Maceió",        iata:"MCZ", regiao:"Nordeste", low:380, high:620 },
+      { uf:"BA", capital:"Salvador",      iata:"SSA", regiao:"Nordeste", low:480, high:760 },
+      { uf:"CE", capital:"Fortaleza",     iata:"FOR", regiao:"Nordeste", low:450, high:720 },
+      { uf:"MA", capital:"São Luís",      iata:"SLZ", regiao:"Nordeste", low:620, high:900 },
+      { uf:"PB", capital:"João Pessoa",   iata:"JPA", regiao:"Nordeste", low:350, high:580 },
+      { uf:"PE", capital:"Recife",        iata:"REC", regiao:"Nordeste", low:0,   high:0, host:true },
+      { uf:"PI", capital:"Teresina",      iata:"THE", regiao:"Nordeste", low:560, high:840 },
+      { uf:"RN", capital:"Natal",         iata:"NAT", regiao:"Nordeste", low:380, high:620 },
+      { uf:"SE", capital:"Aracaju",       iata:"AJU", regiao:"Nordeste", low:430, high:680 },
+      // --- Centro-Oeste ---
+      { uf:"DF", capital:"Brasília",      iata:"BSB", regiao:"Centro-Oeste", low:650, high:950 },
+      { uf:"GO", capital:"Goiânia",       iata:"GYN", regiao:"Centro-Oeste", low:780, high:1100 },
+      { uf:"MT", capital:"Cuiabá",        iata:"CGB", regiao:"Centro-Oeste", low:950, high:1350 },
+      { uf:"MS", capital:"Campo Grande",  iata:"CGR", regiao:"Centro-Oeste", low:980, high:1400 },
+      // --- Sudeste ---
+      { uf:"ES", capital:"Vitória",         iata:"VIX", regiao:"Sudeste", low:700, high:1000 },
+      { uf:"MG", capital:"Belo Horizonte",  iata:"CNF", regiao:"Sudeste", low:650, high:980 },
+      { uf:"RJ", capital:"Rio de Janeiro",  iata:"GIG", regiao:"Sudeste", low:620, high:950 },
+      { uf:"SP", capital:"São Paulo",       iata:"GRU", regiao:"Sudeste", low:600, high:920 },
+      // --- Sul ---
+      { uf:"PR", capital:"Curitiba",      iata:"CWB", regiao:"Sul", low:800, high:1150 },
+      { uf:"SC", capital:"Florianópolis", iata:"FLN", regiao:"Sul", low:850, high:1220 },
+      { uf:"RS", capital:"Porto Alegre",  iata:"POA", regiao:"Sul", low:900, high:1300 }
+    ],
+    // hosp = 5 pernoites | alim = 6 dias | interno = 6 dias (antes do fator da sede)
+    tiers: [
+      { key:"econ", name:"Econômico", cls:"tier-econ",
+        desc:"Hostel compartilhado em Boa Viagem, prato feito e ônibus/metrô.",
+        hosp:350, alim:360, interno:100 },
+      { key:"inter", name:"Intermediário", cls:"tier-inter",
+        desc:"Hotel 3 estrelas em quarto duplo, self-service e mix de ônibus e app.",
+        hosp:650, alim:570, interno:190 },
+      { key:"conforto", name:"Conforto", cls:"tier-conforto",
+        desc:"Hotel 4 estrelas na orla, restaurantes à la carte e app na maioria dos trajetos.",
+        hosp:1250, alim:960, interno:400 }
+    ]
+  };
+
+  // Latência simulada para o estado de carregamento aparecer de verdade.
+  // Remova o setTimeout quando plugar a API real.
+  return new Promise(resolve => setTimeout(() => resolve(payload), 900));
+}
+
+/** Agrupa os voos por regiao e garante os campos que o render espera. */
+function normalize(json){
+  const ordem = ["Norte","Nordeste","Centro-Oeste","Sudeste","Sul"];
+  const porRegiao = {};
+
+  json.voos.forEach(v => {
+    const r = v.regiao || "Outros";
+    if (!porRegiao[r]) porRegiao[r] = [];
+    porRegiao[r].push({
+      uf: v.uf,
+      capital: v.capital,
+      iata: v.iata || "",
+      low: Number(v.low) || 0,
+      high: Number(v.high) || 0,
+      host: Boolean(v.host)
+    });
+  });
+
+  const classes = { econ:"tier-econ", inter:"tier-inter", conforto:"tier-conforto" };
+
+  return {
+    meta: json.meta || {},
+    regions: ordem.filter(r => porRegiao[r]).map(r => ({ name:r, ufs:porRegiao[r] })),
+    tiers: (json.tiers || []).map(t => ({
+      key:t.key, name:t.name, cls:t.cls || classes[t.key] || "tier-econ",
+      desc:t.desc || "",
+      hosp:Number(t.hosp)||0, alim:Number(t.alim)||0, interno:Number(t.interno)||0
+    }))
+  };
+}
+
+/* ==========================================================================
+   FORMATACAO E REGRAS DE TARIFA
+   ========================================================================== */
+function fmt(v){ return "R$ " + Math.round(v).toLocaleString("pt-BR"); }
+
+function daysToEvent(){
+  return Math.ceil((EVENT_DATE - new Date()) / 86400000);
+}
+
+// 8+ semanas de antecedência = tarifa de referência (multiplicador 1).
+// Abaixo disso, acréscimo progressivo até ~80% na véspera.
+function fareMultiplier(diffDays){
+  if (diffDays <= 0) return 1.8;
+  const weeks = diffDays / 7;
+  if (weeks >= 8) return 1.0;
+  return Math.min(1.0 + ((8 - weeks) / 7) * 0.8, 1.8);
+}
+
+function currentFare(){
+  if (!selected || selected.host) return 0;
+  return Math.round(((selected.low + selected.high) / 2) * fareMultiplier(daysToEvent()));
+}
+
+/* ==========================================================================
+   RENDER
+   ========================================================================== */
+
+function renderCountdown(){
+  const badge = document.getElementById("countdownBadge");
+  const d = daysToEvent();
+
+  if (d <= 0){
+    badge.innerHTML = '<span class="dot"></span> O ' + EVENT.name + " já começou!";
+    badge.classList.add("urgent");
+    return;
+  }
+  const weeks = Math.floor(d / 7), days = d % 7;
+  const wTxt = weeks > 0 ? weeks + " semana" + (weeks !== 1 ? "s" : "") : "";
+  const dTxt = days  > 0 ? days  + " dia"    + (days  !== 1 ? "s" : "") : "";
+  const sep  = wTxt && dTxt ? " e " : "";
+
+  badge.innerHTML = '<span class="dot"></span> Faltam <b>' + wTxt + sep + dTxt + "</b>";
+  badge.classList.toggle("urgent", d / 7 < 8);
+}
+
+function renderDataBadge(){
+  const badge = document.getElementById("dataBadge");
+  const pill = document.getElementById("srcPill");
+
+  if (dataSource === "loading"){
+    badge.innerHTML = '<span class="dot"></span> Tarifas: <b>carregando</b>';
+    pill.className = "src-pill";
+    pill.innerHTML = '<span class="dot"></span> fonte: carregando';
+    return;
+  }
+  const live = dataSource === "api";
+  badge.classList.remove("live");
+  badge.innerHTML = '<span class="dot"></span> Tarifas: <b>' + (live ? "em tempo real" : "base simulada") + "</b>";
+  pill.className = "src-pill" + (live ? "" : " sim");
+  pill.innerHTML = '<span class="dot"></span> fonte: ' + (live ? "API " + API_ENDPOINT : "payload simulado (API não conectada)") +
+                   (DATA && DATA.meta && DATA.meta.atualizado_em ? " | atualizado em " + DATA.meta.atualizado_em : "");
+}
+
+function renderRegions(){
+  const el = document.getElementById("regions");
+  el.innerHTML = "";
+
+  DATA.regions.forEach(region => {
+    const block = document.createElement("div");
+    block.className = "region-block";
+
+    const label = document.createElement("p");
+    label.className = "region-label";
+    label.textContent = region.name;
+    block.appendChild(label);
+
+    const grid = document.createElement("div");
+    grid.className = "uf-grid";
+
+    region.ufs.forEach(uf => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "uf-btn" + (uf.host ? " host" : "");
+      btn.textContent = uf.uf;
+      btn.title = uf.capital + (uf.iata ? " (" + uf.iata + ")" : "");
+      btn.setAttribute("aria-pressed", "false");
+      btn.addEventListener("click", () => selectUF(uf));
+      uf._btn = btn;
+      grid.appendChild(btn);
+    });
+
+    block.appendChild(grid);
+    el.appendChild(block);
+  });
+}
+
+function selectUF(uf){
+  selected = uf;
+  document.querySelectorAll(".uf-btn").forEach(b => {
+    b.classList.remove("active");
+    b.setAttribute("aria-pressed", "false");
+  });
+  if (uf._btn){
+    uf._btn.classList.add("active");
+    uf._btn.setAttribute("aria-pressed", "true");
+  }
+  renderTicket();
+  renderTiers();
+}
+
+function renderVenues(){
+  const grid = document.getElementById("venueGrid");
+  grid.innerHTML = "";
+
+  VENUES.forEach(v => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "venue-btn" + (v.id === selectedVenue.id ? " active" : "");
+    btn.setAttribute("aria-pressed", v.id === selectedVenue.id ? "true" : "false");
+    btn.innerHTML =
+      '<span class="v-name">' + v.name + "</span>" +
+      '<span class="v-meta">' + v.area + " &middot; ~" + v.distKm + " km de Boa Viagem</span>";
+    btn.addEventListener("click", () => {
+      selectedVenue = v;
+      renderVenues();
+      renderVenueBadge();
+      renderTiers();
+    });
+    grid.appendChild(btn);
+  });
+}
+
+function renderVenueBadge(){
+  document.getElementById("venueBadge").innerHTML =
+    "Sede simulada: <b>" + selectedVenue.name + "</b>";
+}
+
+function renderFilterChips(){
+  const wrap = document.getElementById("filterChips");
+  wrap.innerHTML = "";
+
+  COST_FILTERS.forEach(f => {
+    const chip = document.createElement("label");
+    chip.className = "filter-chip" + (costFilters[f.key] ? "" : " off");
+    chip.innerHTML = '<input type="checkbox" ' + (costFilters[f.key] ? "checked" : "") +
+                     ' data-key="' + f.key + '"> ' + f.label;
+    wrap.appendChild(chip);
+  });
+
+  wrap.querySelectorAll("input[type=checkbox]").forEach(cb => {
+    cb.addEventListener("change", e => {
+      costFilters[e.target.dataset.key] = e.target.checked;
+      renderFilterChips();
+      renderTiers();
+    });
+  });
+
+  const excluded = COST_FILTERS.filter(f => !costFilters[f.key]).map(f => f.label.toLowerCase());
+  document.getElementById("filterNote").innerHTML = excluded.length === 0
+    ? "Todos os custos estão somados no total abaixo."
+    : "Fora da conta da EJ: <b>" + excluded.join(", ") + "</b> — o congressista cobre por conta própria.";
+}
+
+function renderLoading(){
+  document.getElementById("ticket").innerHTML =
+    '<div class="skeleton">' +
+      '<span class="loading-tag"><span class="spinner"></span> Carregando tarifas em tempo real&hellip;</span>' +
+      '<div class="sk-bar md"></div>' +
+      '<div class="sk-bar lg"></div>' +
+      '<div class="sk-bar sm"></div>' +
+    "</div>";
+
+  document.getElementById("tiers").innerHTML =
+    '<p class="empty-note">Consultando a base de cotações para montar os cenários&hellip;</p>';
+}
+
+function renderTicket(){
+  const el = document.getElementById("ticket");
+
+  if (!selected){
+    el.innerHTML = '<div class="ticket-empty">Escolha o <b>estado de origem</b> ao lado para ver a estimativa de passagem até ' +
+                   EVENT.city + " e montar o orçamento da delegação.</div>";
+    return;
+  }
+
+  if (selected.host){
+    el.innerHTML =
+      '<div class="ticket">' +
+        '<div class="ticket-side" style="grid-column:1/-1;">' +
+          '<p class="t-label">Federação anfitriã</p>' +
+          '<p class="t-iata">' + EVENT.iata + "</p>" +
+          '<p class="t-city">Você já está em ' + EVENT.city + "</p>" +
+          '<p class="t-sub">Sem custo de deslocamento aéreo. Considere hospedagem (se necessária), alimentação e transporte interno nos cenários abaixo.</p>' +
+        "</div>" +
+      "</div>";
+    return;
+  }
+
+  const d = daysToEvent();
+  const mult = fareMultiplier(d);
+  const mid = currentFare();
+  const low = Math.round(selected.low * mult);
+  const high = Math.round(selected.high * mult);
+
+  let windowMsg, windowCls = "";
+  if (d <= 0){
+    windowMsg = "O evento já começou — os valores refletem a faixa de última hora.";
+    windowCls = " warn";
+  } else if (d / 7 >= 8){
+    windowMsg = "Você está na <b>janela ideal</b> de compra (8+ semanas). Estes são os valores de referência.";
+  } else {
+    windowMsg = "Restam menos de 8 semanas: acréscimo de sazonalidade de <b>+" +
+                Math.round((mult - 1) * 100) + "%</b> já somado.";
+    windowCls = " warn";
+  }
+
+  el.innerHTML =
+    '<div class="ticket">' +
+      '<div class="ticket-side origin">' +
+        '<p class="t-label">Origem</p>' +
+        '<p class="t-iata">' + (selected.iata || selected.uf) + "</p>" +
+        '<p class="t-city">' + selected.capital + "</p>" +
+        '<p class="t-sub">' + selected.uf + "</p>" +
+      "</div>" +
+      '<div class="ticket-mid">' +
+        '<div class="dashline"></div>' +
+        '<div class="plane">&#9992;</div>' +
+        '<div class="dashline"></div>' +
+      "</div>" +
+      '<div class="ticket-side dest">' +
+        '<p class="t-label">Destino</p>' +
+        '<p class="t-iata">' + EVENT.iata + "</p>" +
+        '<p class="t-city">' + EVENT.city + "</p>" +
+        '<p class="t-sub">' + EVENT.uf + " &middot; " + EVENT.airport + "</p>" +
+      "</div>" +
+      '<div class="ticket-tear">' +
+        "<div>" +
+          '<p class="fare-label">Passagem aérea &middot; ida e volta</p>' +
+          '<p class="fare-value">' + fmt(mid) + "</p>" +
+          '<p class="fare-range">faixa ' + fmt(low) + " – " + fmt(high) + "</p>" +
+        "</div>" +
+        '<p class="book-window' + windowCls + '">' + windowMsg + "</p>" +
+      "</div>" +
+    "</div>";
+}
+
+function renderTiers(){
+  const wrap = document.getElementById("tiers");
+  const title = document.getElementById("tiersTitle");
+  const ctx = document.getElementById("tiersCtx");
+  wrap.innerHTML = "";
+
+  if (!selected){
+    title.textContent = "Cenários de gasto";
+    ctx.textContent = EVENT.window;
+    wrap.innerHTML = '<p class="empty-note">Escolha um estado de origem para ver os totais estimados.</p>';
+    return;
+  }
+
+  title.textContent = "Cenários de gasto — " + selected.capital + " → " + EVENT.city;
+  ctx.textContent = EVENT.nights + " pernoites · " + EVENT.days + " dias · " + selectedVenue.name;
+
+  const fare = currentFare();
+
+  DATA.tiers.forEach(tier => {
+    // O transporte interno varia com a distância da sede até a rede hoteleira.
+    const interno = Math.round(tier.interno * selectedVenue.factor);
+
+    const items = [
+      { key:"fare",    label:"Passagem (ida e volta)",                  value:fare,       display: fare ? fmt(fare) : "—" },
+      { key:"hosp",    label:"Hospedagem (" + EVENT.nights + " noites)", value:tier.hosp,  display: fmt(tier.hosp) },
+      { key:"alim",    label:"Alimentação (" + EVENT.days + " dias)",    value:tier.alim,  display: fmt(tier.alim) },
+      { key:"interno", label:"Transporte interno (" + EVENT.days + " dias)", value:interno, display: fmt(interno) }
+    ];
+
+    // Ingresso so entra na conta quando TICKET.enabled virar true.
+    if (TICKET.enabled && TICKET.price > 0){
+      items.push({ key:"ticket", label:"Ingresso " + EVENT.name, value:TICKET.price, display:fmt(TICKET.price) });
+    }
+
+    const total = items.reduce((sum, it) => (costFilters[it.key] !== false ? sum + it.value : sum), 0);
+
+    const lines = items.map(it => {
+      const on = costFilters[it.key] !== false;
+      return '<div class="line' + (on ? "" : " excluded") + '">' +
+               "<span>" + it.label + (on ? "" : '<span class="excluded-tag">fora</span>') + "</span>" +
+               '<span class="val">' + it.display + "</span>" +
+             "</div>";
+    }).join("");
+
+    const card = document.createElement("div");
+    card.className = "tier-card " + tier.cls;
+    card.innerHTML =
+      '<span class="tag">' + tier.name + "</span>" +
+      "<h3>" + tier.name + "</h3>" +
+      '<p class="tier-desc">' + tier.desc + "</p>" +
+      lines +
+      '<div class="tier-total">' +
+        '<span class="tlabel">Total por pessoa</span>' +
+        '<span class="tvalue">' + fmt(total) + "</span>" +
+      "</div>" +
+      '<div class="group-total">' +
+        '<span class="glabel">Grupo de ' + groupSize + (groupSize === 1 ? " congressista" : " congressistas") + "</span>" +
+        '<span class="gvalue">' + fmt(total * groupSize) + "</span>" +
+      "</div>";
+    wrap.appendChild(card);
+  });
+}
+
+/* ==========================================================================
+   CONTROLES
+   ========================================================================== */
+function setGroupSize(v){
+  if (isNaN(v) || v < 1) v = 1;
+  if (v > 500) v = 500;
+  groupSize = v;
+  document.getElementById("groupSize").value = v;
+  renderTiers();
+}
+
+document.getElementById("groupSize").addEventListener("input", e => {
+  setGroupSize(parseInt(e.target.value, 10));
+});
+document.getElementById("groupMinus").addEventListener("click", () => setGroupSize(groupSize - 1));
+document.getElementById("groupPlus").addEventListener("click", () => setGroupSize(groupSize + 1));
+
+/* ==========================================================================
+   INICIALIZACAO
+   ========================================================================== */
+async function init(){
+  renderCountdown();
+  renderDataBadge();
+  renderVenues();
+  renderVenueBadge();
+  renderFilterChips();
+  renderLoading();
+
+  DATA = await loadDynamicData();
+
+  renderDataBadge();
+  renderRegions();
+
+  // Abre o painel já operando: pre-seleciona SP, a maior delegação do MEJ.
+  // Troque o "SP" abaixo se preferir outra origem padrao.
+  const todas = DATA.regions.flatMap(r => r.ufs);
+  const padrao = todas.find(u => u.uf === "SP") || todas.find(u => !u.host) || todas[0];
+  if (padrao) selectUF(padrao);
+
+  setInterval(renderCountdown, 3600000); // recalcula a contagem a cada hora
+}
+
+init();
+</script>
+
+</body>
+</html>
