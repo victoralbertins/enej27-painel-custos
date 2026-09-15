@@ -1,0 +1,352 @@
+{
+  "meta": {
+    "moeda": "BRL",
+    "destino": "REC",
+    "evento": "ENEJ 27",
+    "atualizado_em": "2026-09-14",
+    "fonte": "tools/gerar_cotacoes.py"
+  },
+  "voos": [
+    {
+      "uf": "AC",
+      "capital": "Rio Branco",
+      "iata": "RBR",
+      "searchIata": "RBR",
+      "regiao": "Norte",
+      "low": 1500,
+      "high": 2100,
+      "host": false
+    },
+    {
+      "uf": "AP",
+      "capital": "Macapá",
+      "iata": "MCP",
+      "searchIata": "MCP",
+      "regiao": "Norte",
+      "low": 1100,
+      "high": 1500,
+      "host": false
+    },
+    {
+      "uf": "AM",
+      "capital": "Manaus",
+      "iata": "MAO",
+      "searchIata": "MAO",
+      "regiao": "Norte",
+      "low": 1150,
+      "high": 1600,
+      "host": false
+    },
+    {
+      "uf": "PA",
+      "capital": "Belém",
+      "iata": "BEL",
+      "searchIata": "BEL",
+      "regiao": "Norte",
+      "low": 750,
+      "high": 1050,
+      "host": false
+    },
+    {
+      "uf": "RO",
+      "capital": "Porto Velho",
+      "iata": "PVH",
+      "searchIata": "PVH",
+      "regiao": "Norte",
+      "low": 1350,
+      "high": 1850,
+      "host": false
+    },
+    {
+      "uf": "RR",
+      "capital": "Boa Vista",
+      "iata": "BVB",
+      "searchIata": "BVB",
+      "regiao": "Norte",
+      "low": 1450,
+      "high": 1950,
+      "host": false
+    },
+    {
+      "uf": "TO",
+      "capital": "Palmas",
+      "iata": "PMW",
+      "searchIata": "PMW",
+      "regiao": "Norte",
+      "low": 900,
+      "high": 1250,
+      "host": false
+    },
+    {
+      "uf": "AL",
+      "capital": "Maceió",
+      "iata": "MCZ",
+      "searchIata": "MCZ",
+      "regiao": "Nordeste",
+      "low": 380,
+      "high": 620,
+      "host": false
+    },
+    {
+      "uf": "BA",
+      "capital": "Salvador",
+      "iata": "SSA",
+      "searchIata": "SSA",
+      "regiao": "Nordeste",
+      "low": 480,
+      "high": 760,
+      "host": false
+    },
+    {
+      "uf": "CE",
+      "capital": "Fortaleza",
+      "iata": "FOR",
+      "searchIata": "FOR",
+      "regiao": "Nordeste",
+      "low": 450,
+      "high": 720,
+      "host": false
+    },
+    {
+      "uf": "MA",
+      "capital": "São Luís",
+      "iata": "SLZ",
+      "searchIata": "SLZ",
+      "regiao": "Nordeste",
+      "low": 620,
+      "high": 900,
+      "host": false
+    },
+    {
+      "uf": "PB",
+      "capital": "João Pessoa",
+      "iata": "JPA",
+      "searchIata": "JPA",
+      "regiao": "Nordeste",
+      "low": 350,
+      "high": 580,
+      "host": false
+    },
+    {
+      "uf": "PE",
+      "capital": "Recife",
+      "iata": "REC",
+      "searchIata": "REC",
+      "regiao": "Nordeste",
+      "low": 0,
+      "high": 0,
+      "host": true
+    },
+    {
+      "uf": "PI",
+      "capital": "Teresina",
+      "iata": "THE",
+      "searchIata": "THE",
+      "regiao": "Nordeste",
+      "low": 560,
+      "high": 840,
+      "host": false
+    },
+    {
+      "uf": "RN",
+      "capital": "Natal",
+      "iata": "NAT",
+      "searchIata": "NAT",
+      "regiao": "Nordeste",
+      "low": 380,
+      "high": 620,
+      "host": false
+    },
+    {
+      "uf": "SE",
+      "capital": "Aracaju",
+      "iata": "AJU",
+      "searchIata": "AJU",
+      "regiao": "Nordeste",
+      "low": 430,
+      "high": 680,
+      "host": false
+    },
+    {
+      "uf": "DF",
+      "capital": "Brasília",
+      "iata": "BSB",
+      "searchIata": "BSB",
+      "regiao": "Centro-Oeste",
+      "low": 650,
+      "high": 950,
+      "host": false
+    },
+    {
+      "uf": "GO",
+      "capital": "Goiânia",
+      "iata": "GYN",
+      "searchIata": "GYN",
+      "regiao": "Centro-Oeste",
+      "low": 780,
+      "high": 1100,
+      "host": false
+    },
+    {
+      "uf": "MT",
+      "capital": "Cuiabá",
+      "iata": "CGB",
+      "searchIata": "CGB",
+      "regiao": "Centro-Oeste",
+      "low": 950,
+      "high": 1350,
+      "host": false
+    },
+    {
+      "uf": "MS",
+      "capital": "Campo Grande",
+      "iata": "CGR",
+      "searchIata": "CGR",
+      "regiao": "Centro-Oeste",
+      "low": 980,
+      "high": 1400,
+      "host": false
+    },
+    {
+      "uf": "ES",
+      "capital": "Vitória",
+      "iata": "VIX",
+      "searchIata": "VIX",
+      "regiao": "Sudeste",
+      "low": 700,
+      "high": 1000,
+      "host": false
+    },
+    {
+      "uf": "MG",
+      "capital": "Belo Horizonte",
+      "iata": "CNF",
+      "searchIata": "CNF",
+      "regiao": "Sudeste",
+      "low": 650,
+      "high": 980,
+      "host": false
+    },
+    {
+      "uf": "RJ",
+      "capital": "Rio de Janeiro",
+      "iata": "GIG",
+      "searchIata": "RIO",
+      "regiao": "Sudeste",
+      "low": 620,
+      "high": 950,
+      "host": false
+    },
+    {
+      "uf": "SP",
+      "capital": "São Paulo",
+      "iata": "GRU",
+      "searchIata": "SAO",
+      "regiao": "Sudeste",
+      "low": 600,
+      "high": 920,
+      "host": false
+    },
+    {
+      "uf": "PR",
+      "capital": "Curitiba",
+      "iata": "CWB",
+      "searchIata": "CWB",
+      "regiao": "Sul",
+      "low": 800,
+      "high": 1150,
+      "host": false
+    },
+    {
+      "uf": "SC",
+      "capital": "Florianópolis",
+      "iata": "FLN",
+      "searchIata": "FLN",
+      "regiao": "Sul",
+      "low": 850,
+      "high": 1220,
+      "host": false
+    },
+    {
+      "uf": "RS",
+      "capital": "Porto Alegre",
+      "iata": "POA",
+      "searchIata": "POA",
+      "regiao": "Sul",
+      "low": 900,
+      "high": 1300,
+      "host": false
+    }
+  ],
+  "tiers": [
+    {
+      "key": "econ",
+      "name": "Econômico",
+      "desc": "Hostel compartilhado em Boa Viagem, prato feito e ônibus/metrô.",
+      "hospNight": 70,
+      "hospWhat": "cama em quarto compartilhado",
+      "hotelFilter": "ht_id%3D203",
+      "meals": {
+        "cafe": 12,
+        "almoco": 25,
+        "jantar": 23
+      },
+      "mealsWhat": "padaria, prato feito e lanche à noite",
+      "transit": {
+        "busRides": 4,
+        "busFare": 4.9,
+        "uberRides": 1,
+        "uberFare": 7.0,
+        "airportRides": 2,
+        "airportFare": 22.0
+      },
+      "transitWhat": "4 embarques de ônibus/metrô + 1 Uber noturno dividido entre 4"
+    },
+    {
+      "key": "inter",
+      "name": "Intermediário",
+      "desc": "Hotel 3 estrelas em quarto duplo, self-service e mix de ônibus e Uber.",
+      "hospNight": 130,
+      "hospWhat": "quarto duplo, valor por pessoa",
+      "hotelFilter": "class%3D3",
+      "meals": {
+        "cafe": 18,
+        "almoco": 42,
+        "jantar": 35
+      },
+      "mealsWhat": "café do hotel, self-service por quilo e jantar simples",
+      "transit": {
+        "busRides": 2,
+        "busFare": 4.9,
+        "uberRides": 1,
+        "uberFare": 24.0,
+        "airportRides": 2,
+        "airportFare": 22.0
+      },
+      "transitWhat": "2 embarques de ônibus + 1 corrida de Uber por dia"
+    },
+    {
+      "key": "conforto",
+      "name": "Conforto",
+      "desc": "Hotel 4 estrelas na orla, restaurantes à la carte e Uber em todos os trajetos.",
+      "hospNight": 250,
+      "hospWhat": "apartamento na orla de Boa Viagem",
+      "hotelFilter": "class%3D4",
+      "meals": {
+        "cafe": 30,
+        "almoco": 65,
+        "jantar": 65
+      },
+      "mealsWhat": "restaurantes à la carte no almoço e no jantar",
+      "transit": {
+        "busRides": 0,
+        "busFare": 0,
+        "uberRides": 2,
+        "uberFare": 34.0,
+        "airportRides": 2,
+        "airportFare": 26.0
+      },
+      "transitWhat": "2 corridas de Uber por dia, sem transporte público"
+    }
+  ]
+}

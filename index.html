@@ -499,7 +499,7 @@ main{max-width:1180px;margin:-30px auto 0;padding:0 24px;position:relative;z-ind
   font-family:var(--font-mono);font-size:11.5px;line-height:1.6;
   background:var(--surface-sunk);border:1px solid var(--line);
   border-left:3px solid var(--blue);border-radius:9px;padding:10px 12px;color:var(--ink);
-  overflow-x:auto;
+  overflow-x:auto;white-space:pre-wrap;
 }
 .calc-alim .formula{border-left-color:var(--green-bright);}
 .calc-rows{display:flex;flex-direction:column;gap:0;}
@@ -654,7 +654,7 @@ footer code{
       </div>
       <div>
         <h4>Dados</h4>
-        <p><code>API_ENDPOINT</code> ainda aponta para um endereço de exemplo, que não existe. Por isso <code>loadDynamicData()</code> cai na base de referência interna — é o fallback previsto, não uma falha. Ao trocar pelo endpoint real, o selo abaixo passa a "em tempo real" sozinho. Reconfirme os valores próximo à data de compra.</p>
+        <p>O painel faz um <code>fetch()</code> real em <code>API_ENDPOINT</code>, que serve <code>data/cotacoes-enej27.json</code> — gerado por <code>tools/gerar_cotacoes.py</code>, o mesmo script que você porta para o BigQuery. Se a chamada falhar, o painel cai no payload interno e o selo abaixo avisa. Reconfirme os valores próximo à data de compra.</p>
       </div>
     </div>
     <span class="src-pill" id="srcPill"><span class="dot"></span> fonte: carregando</span>
@@ -668,23 +668,30 @@ footer code{
 
    >>> ONDE PLUGAR SEU BACKEND (Python / BigQuery) <<<
 
-   1. Troque API_ENDPOINT (logo abaixo) pela URL real do seu serviço.
-      Ex.: "https://enej27-api.suaempresa.com/v1/cotações"
+   A API JÁ ESTÁ FUNCIONANDO. O painel faz um fetch() real em API_ENDPOINT,
+   que hoje serve data/cotacoes-enej27.json pelo próprio GitHub Pages deste
+   repositório (o Pages responde com Access-Control-Allow-Origin: *, então a
+   chamada funciona de qualquer domínio). Esse arquivo é gerado por
+   tools/gerar_cotacoes.py.
+
+   1. Para trocar pelo seu serviço, mude só a linha API_ENDPOINT abaixo.
+      Ex.: "https://enej27-api.suaempresa.com/v1/cotacoes"
            ou um Cloud Function / Cloud Run em cima do BigQuery.
+      O contrato é o mesmo — porte tools/gerar_cotacoes.py para uma query.
 
-   2. Sua API deve devolver JSON no formato descrito em simulatedPayload().
-      Enquanto ela não existir, loadDynamicData() usa o payload simulado
-      automaticamente, então o painel nunca quebra.
-
-   3. Se sua API exigir autenticacao, adicione o header em API_HEADERS.
+   2. Se sua API exigir autenticação, adicione o header em API_HEADERS.
       Atenção: este arquivo é público, então não coloque chave secreta aqui.
-      Prefira uma API publica de leitura ou um proxy que injete a chave.
+      Prefira uma API pública de leitura ou um proxy que injete a chave.
 
-   4. CORS: o backend precisa responder com
+   3. CORS: o backend precisa responder com
       Access-Control-Allow-Origin para o domínio onde este painel está no ar.
+
+   4. Se a chamada falhar (rede fora, endpoint errado, timeout), o painel cai
+      em simulatedPayload() e continua utilizável — o selo no rodapé avisa
+      qual das duas fontes está no ar.
    ========================================================================== */
 
-const API_ENDPOINT = "https://api.exemplo.com/cotações-enej27"; // <<< TROQUE AQUI
+const API_ENDPOINT = "https://victoralbertins.github.io/enej27-painel-custos/data/cotacoes-enej27.json"; // <<< TROQUE AQUI
 const API_HEADERS  = { "Accept": "application/json" };          // <<< headers/auth aqui
 const API_TIMEOUT_MS = 6000;
 
@@ -830,8 +837,8 @@ function simulatedPayload(){
       // --- Sudeste ---
       { uf:"ES", capital:"Vitória",         iata:"VIX", regiao:"Sudeste", low:700, high:1000 },
       { uf:"MG", capital:"Belo Horizonte",  iata:"CNF", regiao:"Sudeste", low:650, high:980 },
-      { uf:"RJ", capital:"Rio de Janeiro",  iata:"GIG", regiao:"Sudeste", low:620, high:950 },
-      { uf:"SP", capital:"São Paulo",       iata:"GRU", regiao:"Sudeste", low:600, high:920 },
+      { uf:"RJ", capital:"Rio de Janeiro",  iata:"GIG", searchIata:"RIO", regiao:"Sudeste", low:620, high:950 },
+      { uf:"SP", capital:"São Paulo",       iata:"GRU", searchIata:"SAO", regiao:"Sudeste", low:600, high:920 },
       // --- Sul ---
       { uf:"PR", capital:"Curitiba",      iata:"CWB", regiao:"Sul", low:800, high:1150 },
       { uf:"SC", capital:"Florianópolis", iata:"FLN", regiao:"Sul", low:850, high:1220 },
@@ -850,19 +857,22 @@ function simulatedPayload(){
         desc:"Hostel compartilhado em Boa Viagem, prato feito e ônibus/metrô.",
         hospNight:70,  hospWhat:"cama em quarto compartilhado", hotelFilter:"ht_id%3D203",
         meals:{ cafe:12, almoco:25, jantar:23 }, mealsWhat:"padaria, prato feito e lanche à noite",
-        transit:{ rides:4, fare:4.90, app:0, appFare:0 }, transitWhat:"4 embarques de ônibus/metrô por dia" },
+        transit:{ busRides:4, busFare:4.90, uberRides:1, uberFare:7.00, airportRides:2, airportFare:22.00 },
+        transitWhat:"4 embarques de ônibus/metrô + 1 Uber noturno dividido entre 4" },
 
       { key:"inter", name:"Intermediário", cls:"tier-inter",
-        desc:"Hotel 3 estrelas em quarto duplo, self-service e mix de ônibus e app.",
+        desc:"Hotel 3 estrelas em quarto duplo, self-service e mix de ônibus e Uber.",
         hospNight:130, hospWhat:"quarto duplo, valor por pessoa", hotelFilter:"class%3D3",
         meals:{ cafe:18, almoco:42, jantar:35 }, mealsWhat:"café do hotel, self-service por quilo e jantar simples",
-        transit:{ rides:2, fare:4.90, app:1, appFare:24 }, transitWhat:"2 embarques + 1 corrida de app por dia" },
+        transit:{ busRides:2, busFare:4.90, uberRides:1, uberFare:24.00, airportRides:2, airportFare:22.00 },
+        transitWhat:"2 embarques de ônibus + 1 corrida de Uber por dia" },
 
       { key:"conforto", name:"Conforto", cls:"tier-conforto",
-        desc:"Hotel 4 estrelas na orla, restaurantes à la carte e app na maioria dos trajetos.",
+        desc:"Hotel 4 estrelas na orla, restaurantes à la carte e Uber em todos os trajetos.",
         hospNight:250, hospWhat:"apartamento na orla de Boa Viagem", hotelFilter:"class%3D4",
         meals:{ cafe:30, almoco:65, jantar:65 }, mealsWhat:"restaurantes à la carte no almoço e no jantar",
-        transit:{ rides:0, fare:0, app:2, appFare:34 }, transitWhat:"2 corridas de app por dia" }
+        transit:{ busRides:0, busFare:0, uberRides:2, uberFare:34.00, airportRides:2, airportFare:26.00 },
+        transitWhat:"2 corridas de Uber por dia, sem transporte público" }
     ]
   };
 
@@ -883,6 +893,9 @@ function normalize(json){
       uf: v.uf,
       capital: v.capital,
       iata: v.iata || "",
+      // codigo usado nos links de busca: metropolitano quando existe
+      // (SAO cobre GRU+CGH, RIO cobre GIG+SDU), senao o proprio aeroporto
+      searchIata: v.searchIata || v.iata || "",
       low: Number(v.low) || 0,
       high: Number(v.high) || 0,
       host: Boolean(v.host)
@@ -896,27 +909,37 @@ function normalize(json){
     regions: ordem.filter(r => porRegiao[r]).map(r => ({ name:r, ufs:porRegiao[r] })),
     tiers: (json.tiers || []).map(t => {
       const meals = t.meals || {};
-      const transit = t.transit || {};
+      const tr = t.transit || {};
+      const n = v => Number(v) || 0;
 
-      // Custo de um dia de refeições e de um dia de deslocamento.
-      const mealsDay = (Number(meals.cafe)||0) + (Number(meals.almoco)||0) + (Number(meals.jantar)||0);
-      const transitDay = (Number(transit.rides)||0) * (Number(transit.fare)||0) +
-                         (Number(transit.app)||0)   * (Number(transit.appFare)||0);
+      const mealsDay = n(meals.cafe) + n(meals.almoco) + n(meals.jantar);
+
+      // Transporte tem duas naturezas diferentes:
+      //  - transitDay: deslocamento diário hospedagem <-> sede. Varia com a
+      //    distância da sede, então é multiplicado pelo fator dela.
+      //  - transitFixed: traslado do aeroporto (ida e volta), cobrado uma vez
+      //    na viagem. NÃO varia com a sede — o trajeto REC -> Boa Viagem é o
+      //    mesmo independente de onde o evento acontecer.
+      const busDay  = n(tr.busRides)  * n(tr.busFare);
+      const uberDay = n(tr.uberRides) * n(tr.uberFare);
+      const transitDay = busDay + uberDay;
+      const transitFixed = n(tr.airportRides) * n(tr.airportFare);
 
       return {
         key:t.key, name:t.name, cls:t.cls || classes[t.key] || "tier-econ",
         desc:t.desc || "",
 
         // unitários (guardados para a memória de cálculo na tela)
-        hospNight:Number(t.hospNight)||0, hospWhat:t.hospWhat || "",
+        hospNight:n(t.hospNight), hospWhat:t.hospWhat || "",
         hotelFilter:t.hotelFilter || "",
         meals, mealsDay, mealsWhat:t.mealsWhat || "",
-        transit, transitDay, transitWhat:t.transitWhat || "",
+        transit:tr, busDay, uberDay, transitDay, transitFixed,
+        transitWhat:t.transitWhat || "",
 
         // totais do período — se o backend mandar o total fechado, ele vence
-        hosp:    Number(t.hosp)    || (Number(t.hospNight)||0) * EVENT.nights,
-        alim:    Number(t.alim)    || mealsDay   * EVENT.days,
-        interno: Number(t.interno) || transitDay * EVENT.days
+        hosp: n(t.hosp) || n(t.hospNight) * EVENT.nights,
+        alim: n(t.alim) || mealsDay * EVENT.days
+        // interno não é fechado aqui: depende da sede, calculado em internoDe()
       };
     })
   };
@@ -927,26 +950,53 @@ function normalize(json){
    Levam para a busca já preenchida com origem, destino e as datas do EVENT,
    para o congressista conferir o preço real na fonte.
    ========================================================================== */
-function flightsUrl(iata){
-  return "https://www.google.com/travel/flights?q=" + encodeURIComponent(
-    "voos de " + iata + " para " + EVENT.iata +
-    " ida " + EVENT.departISO + " volta " + EVENT.returnISO);
+/* Google Flights: a busca em linguagem natural em ingles e o formato que o
+   Google resolve de forma confiavel. Abre direto no resultado ida e volta da
+   origem selecionada para REC, nas datas do evento, em BRL. */
+function flightsUrl(uf){
+  return "https://www.google.com/travel/flights?curr=BRL&hl=pt-BR&gl=BR&q=" +
+    encodeURIComponent(
+      "Flights from " + uf.searchIata + " to " + EVENT.iata +
+      " on " + EVENT.departISO + " through " + EVENT.returnISO);
 }
-function kayakUrl(iata){
-  return "https://www.kayak.com.br/flights/" + iata + "-" + EVENT.iata +
-         "/" + EVENT.departISO + "/" + EVENT.returnISO;
+
+/* Kayak aceita deep link posicional: /flights/ORIGEM-DESTINO/ida/volta.
+   sort=price_a abre ordenado pelo mais barato, que e a base da nossa faixa. */
+function kayakUrl(uf){
+  return "https://www.kayak.com.br/flights/" + uf.searchIata + "-" + EVENT.iata +
+         "/" + EVENT.departISO + "/" + EVENT.returnISO +
+         "?sort=price_a&currency=BRL";
 }
+
+/* Booking em Boa Viagem, nas datas do evento, filtrado pela categoria do
+   cenario (hostel / 3 estrelas / 4 estrelas) e ordenado por preco, para cair
+   na mesma faixa que alimentou a diaria do painel. */
 function hotelsUrl(tier){
   return "https://www.booking.com/searchresults.html?ss=" +
          encodeURIComponent("Boa Viagem, Recife") +
          "&checkin=" + EVENT.departISO + "&checkout=" + EVENT.returnISO +
-         "&group_adults=1&no_rooms=1" +
+         "&group_adults=1&no_rooms=1&order=price&selected_currency=BRL" +
          (tier.hotelFilter ? "&nflt=" + tier.hotelFilter : "");
 }
+
+/* Rota Boa Viagem -> sede no Google Maps (distancia e tempo reais). */
 function routeUrl(venue){
   return "https://www.google.com/maps/dir/" +
          encodeURIComponent("Boa Viagem, Recife - PE") + "/" +
          encodeURIComponent(venue.maps || venue.name);
+}
+
+/* Estimativa de corrida no Uber para o mesmo trajeto usado no calculo. */
+function uberUrl(venue){
+  return "https://m.uber.com/ul/?action=setPickup" +
+         "&pickup%5Bformatted_address%5D=" + encodeURIComponent("Boa Viagem, Recife - PE") +
+         "&dropoff%5Bformatted_address%5D=" + encodeURIComponent(venue.maps || venue.name);
+}
+
+/* Transporte interno de um cenario numa sede:
+   diario x dias x fator da sede  +  traslado do aeroporto (fixo). */
+function internoDe(tier, venue){
+  return Math.round(tier.transitDay * EVENT.days * venue.factor + tier.transitFixed);
 }
 
 /* ==========================================================================
@@ -1015,12 +1065,20 @@ function renderDataBadge(){
     ? "Servidas por " + API_ENDPOINT
     : "O endpoint de exemplo ainda não foi trocado pelo backend real, então o painel usa a base interna.";
 
+  // Mostra só host + arquivo: a URL inteira estoura a largura do rodapé.
+  let curto = API_ENDPOINT;
+  try {
+    const u = new URL(API_ENDPOINT);
+    curto = u.host + "/…/" + u.pathname.split("/").pop();
+  } catch (e) { /* URL relativa: mantem como esta */ }
+
   pill.className = "src-pill" + (live ? "" : " sim");
   pill.innerHTML = '<span class="dot"></span> fonte: ' +
     (live
-      ? "API " + API_ENDPOINT
-      : "base interna — API real ainda não configurada em API_ENDPOINT") +
-    (DATA && DATA.meta && DATA.meta.atualizado_em ? " | atualizado em " + DATA.meta.atualizado_em : "");
+      ? "API " + curto
+      : "payload interno — a chamada a " + curto + " falhou") +
+    (DATA && DATA.meta && DATA.meta.atualizado_em ? " · atualizado em " + DATA.meta.atualizado_em : "");
+  pill.title = API_ENDPOINT;
 }
 
 function renderRegions(){
@@ -1226,8 +1284,9 @@ function renderTiers(){
   const fare = currentFare();
 
   DATA.tiers.forEach(tier => {
-    // O transporte interno varia com a distância da sede até a rede hoteleira.
-    const interno = Math.round(tier.interno * selectedVenue.factor);
+    // O deslocamento diário varia com a distância da sede; o traslado do
+    // aeroporto entra fixo. Ver internoDe().
+    const interno = internoDe(tier, selectedVenue);
 
     const src = (url, txt) => ' <a class="line-src" href="' + url +
                               '" target="_blank" rel="noopener">' + txt + ' &#8599;</a>';
@@ -1241,8 +1300,8 @@ function renderTiers(){
             (fareMultiplier(daysToEvent()) > 1
               ? " +" + Math.round((fareMultiplier(daysToEvent()) - 1) * 100) + "% de sazonalidade"
               : "") +
-            src(flightsUrl(selected.iata), "Google Flights") +
-            src(kayakUrl(selected.iata), "Kayak") },
+            src(flightsUrl(selected), "Google Flights") +
+            src(kayakUrl(selected), "Kayak") },
 
       { key:"hosp", label:"Hospedagem (" + EVENT.nights + " noites)",
         value:tier.hosp, display: fmt(tier.hosp),
@@ -1257,8 +1316,11 @@ function renderTiers(){
       { key:"interno", label:"Transporte interno (" + EVENT.days + " dias)",
         value:interno, display: fmt(interno),
         math: EVENT.days + " × " + fmt(tier.transitDay) + "/dia × " +
-              selectedVenue.factor.toFixed(2).replace(".", ",") + " (" + selectedVenue.name + ") · " +
-              tier.transitWhat + src(routeUrl(selectedVenue), "ver rota") }
+              selectedVenue.factor.toFixed(2).replace(".", ",") + " + " +
+              fmt(tier.transitFixed) + " de traslado do aeroporto · " +
+              tier.transitWhat +
+              src(routeUrl(selectedVenue), "rota") +
+              src(uberUrl(selectedVenue), "estimar Uber") }
     ];
 
     // Ingresso so entra na conta quando TICKET.enabled virar true.
@@ -1313,14 +1375,17 @@ function renderCalc(){
     "</div>").join("");
 
   const transpRows = DATA.tiers.map(t => {
+    const tr = t.transit;
     const parts = [];
-    if (t.transit.rides) parts.push(t.transit.rides + " × " + fmt(t.transit.fare));
-    if (t.transit.app)   parts.push(t.transit.app + " × " + fmt(t.transit.appFare));
+    if (tr.busRides)  parts.push(tr.busRides  + " ônibus × " + fmt(tr.busFare));
+    if (tr.uberRides) parts.push(tr.uberRides + " Uber × " + fmt(tr.uberFare));
+
     return '<div class="calc-row">' +
       '<span class="cr-name">' + t.name + "</span>" +
       '<span class="cr-math">' + parts.join(" + ") + " = " + fmt(t.transitDay) + "/dia × " +
         EVENT.days + " × " + selectedVenue.factor.toFixed(2).replace(".", ",") +
-        " = <b>" + fmt(Math.round(t.interno * selectedVenue.factor)) + "</b></span>" +
+        " + " + fmt(t.transitFixed) + " aeroporto" +
+        " = <b>" + fmt(internoDe(t, selectedVenue)) + "</b></span>" +
     "</div>";
   }).join("");
 
@@ -1341,18 +1406,20 @@ function renderCalc(){
 
     '<div class="calc-block calc-transp">' +
       "<h3>Transporte interno</h3>" +
-      '<p class="calc-intro">Deslocamentos diários entre a hospedagem em Boa Viagem e a sede, ' +
-        "durante os " + EVENT.days + " dias. O resultado é multiplicado pelo <b>fator da sede</b>, " +
-        "que reflete a distância de cada candidata.</p>" +
-      '<div class="formula">transporte = (embarques × tarifa + corridas × preço) × ' +
-        EVENT.days + " dias × fator da sede</div>" +
+      '<p class="calc-intro">Duas parcelas com naturezas diferentes. O <b>deslocamento diário</b> ' +
+        "entre a hospedagem em Boa Viagem e a sede mistura ônibus/metrô e Uber, e é multiplicado " +
+        "pelo fator da sede. O <b>traslado do aeroporto</b> (ida e volta de Uber, REC ↔ Boa Viagem) " +
+        "é cobrado uma vez na viagem e não varia com a sede — esse trajeto é o mesmo em qualquer " +
+        "cenário de local.</p>" +
+      '<div class="formula">transporte = (ônibus × tarifa + Uber × preço) × ' +
+        EVENT.days + " dias × fator da sede\n            + traslado do aeroporto (ida e volta)</div>" +
       '<div class="calc-rows">' + transpRows + "</div>" +
       '<p class="calc-foot">Sede selecionada: <b>' + selectedVenue.name + "</b> (~" +
         selectedVenue.distKm + " km de Boa Viagem, fator " +
         selectedVenue.factor.toFixed(2).replace(".", ",") + "). " +
         "O fator sai de <b>1 + (km ÷ 6 − 1) × 0,30</b>, tomando o Geraldão como referência: " +
-        "dobrar a distância não dobra o gasto, porque parte do trajeto é a mesma tarifa de ônibus. " +
-        "Fatores: " + fatores + ".</p>" +
+        "dobrar a distância não dobra o gasto, porque parte do trajeto é a mesma tarifa de ônibus " +
+        "e a corrida de Uber cresce menos que proporcionalmente. Fatores: " + fatores + ".</p>" +
     "</div>";
 }
 
