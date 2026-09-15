@@ -1607,10 +1607,16 @@ function renderDataBadge(){
     curto = u.host + "/…/" + u.pathname.split("/").pop();
   } catch (e) { /* URL relativa: mantem como esta */ }
 
-  // Quantas origens tem cotacao real por tras, para o numero nao passar por
-  // mais preciso do que e.
+  // Quantas rotas tem dado real por tras, para o numero nao passar por mais
+  // preciso do que e. Campos vem de meta.calibracao (ver gerar_cotacoes.py).
   const cal = (DATA && DATA.meta && DATA.meta.calibracao) || null;
-  const total = DATA ? DATA.regions.reduce((n, r) => n + r.ufs.length, 0) : 0;
+  const origens = DATA ? DATA.regions.reduce((n, r) => n + r.ufs.length, 0) : 0;
+  const rotas = Math.max(origens - 1, 0); // exclui a anfitria, que nao voa
+  let procedencia = "";
+  if (cal){
+    procedencia = " · " + (cal.rotas_com_dado || 0) + "/" + rotas + " rotas com dado real";
+    if (cal.cotacoes_datadas) procedencia += " · " + cal.cotacoes_datadas + " com cotação datada";
+  }
 
   pill.className = "src-pill" + (live ? "" : " sim");
   pill.innerHTML = '<span class="dot"></span> fonte: ' +
@@ -1618,11 +1624,7 @@ function renderDataBadge(){
       ? "API " + curto
       : "payload interno — a chamada a " + curto + " falhou") +
     (DATA && DATA.meta && DATA.meta.atualizado_em ? " · atualizado em " + DATA.meta.atualizado_em : "") +
-    (cal ? " · " + cal.observacoes + "/" + total + " origens com cotação real" +
-           (cal.fator !== 1
-              ? " · demais calibradas ×" + cal.fator.toFixed(2).replace(".", ",")
-              : "")
-         : "");
+    procedencia;
   pill.title = API_ENDPOINT;
 }
 
@@ -1999,6 +2001,21 @@ document.getElementById("groupPlus").addEventListener("click", () => setGroupSiz
 /* ==========================================================================
    INICIALIZACAO
    ========================================================================== */
+/* Mostra o que deu errado em vez de deixar o esqueleto girando para sempre.
+   O carregamento infinito e o pior modo de falha possivel: parece que o
+   painel esta trabalhando quando ele ja morreu. */
+function renderErro(err){
+  console.error("[ENEJ27]", err);
+  document.getElementById("ticket").innerHTML =
+    '<div class="ticket-empty">Não foi possível montar o painel: <b>' +
+    (err && err.message ? err.message : "erro inesperado") +
+    "</b>.<br>Recarregue a página. Se persistir, abra o console do navegador — " +
+    "o erro completo está lá.</div>";
+  document.getElementById("tiers").innerHTML =
+    '<p class="empty-note">Cenários indisponíveis: o carregamento falhou.</p>';
+  document.getElementById("calc").innerHTML = "";
+}
+
 async function init(){
   renderCountdown();
   renderDataBadge();
@@ -2023,7 +2040,7 @@ async function init(){
   setInterval(renderCountdown, 3600000); // recalcula a contagem a cada hora
 }
 
-init();
+init().catch(renderErro);
 </script>
 
 </body>
