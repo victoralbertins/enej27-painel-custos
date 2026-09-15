@@ -78,6 +78,43 @@ def carregar_observacoes():
     return voos, hoteis
 
 # ---------------------------------------------------------------------------
+# FONTES
+# Cada número que tem lastro verificável está aqui, com a URL e a data da
+# consulta. O que NÃO aparece nesta lista é estimativa — e o painel marca
+# esses casos em âmbar. Ver FONTES.md para o inventário completo.
+# ---------------------------------------------------------------------------
+FONTES = [
+    {"item": "Tarifa de ônibus urbano (Anel A, R$ 4,50)",
+     "fonte": "Grande Recife Consórcio de Transporte / Folha PE",
+     "url": "https://www.folhape.com.br/noticias/aumento-da-passagem-de-onibus-no-grande-recife-e-homologado-e-anel-a/463122/",
+     "consultado_em": "2026-09-15"},
+    {"item": "Uber aeroporto REC <-> Boa Viagem (R$ 23, 5,71 km)",
+     "fonte": "Uber (página oficial de estimativa da rota)",
+     "url": "https://www.uber.com/global/en/r/routes/recife-pe-br-to-rec/",
+     "consultado_em": "2026-09-15"},
+    {"item": "Prato feito (R$ 30-31,90)",
+     "fonte": "Abrasel, via Mercado&Consumo",
+     "url": "https://mercadoeconsumo.com.br/07/05/2026/foodservice/alimentacao-fora-de-casa-fica-mais-cara-e-prato-feito-atinge-media-de-r-3027/",
+     "consultado_em": "2026-09-15"},
+    {"item": "Diária média em Recife (R$ 280 o quarto duplo)",
+     "fonte": "Dicas de Viagem / Viaje na Viagem (levantamento de mercado)",
+     "url": "https://www.dicasdeviagem.com/hoteis-em-recife/",
+     "consultado_em": "2026-09-15"},
+    {"item": "Tarifa aérea doméstica média (R$ 632,53 por trecho, mai/2026)",
+     "fonte": "ANAC — dados tarifários mensais",
+     "url": "https://www.gov.br/anac/pt-br/noticias/2026/anac-publica-dados-tarifarios-do-mes-de-maio-de-2026",
+     "consultado_em": "2026-09-15"},
+    {"item": "Passagem rodoviária João Pessoa / Natal / Maceió",
+     "fonte": "ClickBus e CheckMyBus",
+     "url": "https://www.clickbus.com.br/onibus/joao-pessoa-pb",
+     "consultado_em": "2026-09-15"},
+    {"item": "Cotação real SP -> REC ida e volta (R$ 1.154)",
+     "fonte": "Kayak, conferida pelo usuário",
+     "url": "https://www.kayak.com.br/flights/SAO-REC/2027-08-25/2027-08-30",
+     "consultado_em": "2026-09-14"},
+]
+
+# ---------------------------------------------------------------------------
 # MODELO BASE — estimativa central (ida e volta) antes da calibração.
 # searchIata: código usado nos links de busca. Difere do iata quando a cidade
 # tem código metropolitano (SAO cobre GRU+CGH, RIO cobre GIG+SDU).
@@ -94,16 +131,16 @@ BASE_VOO = [
     ("TO", "Palmas",         "PMW", "Norte",        1075, None, None),
 
     ("AL", "Maceió",         "MCZ", "Nordeste",      500, None,
-     "Maceió fica a 260 km: ônibus leva ~4h por ~R$ 90 ida e volta, bem abaixo do voo."),
+     "Maceió fica a 260 km: ônibus leva ~4h, a partir de R$ 100 por trecho (~R$ 200 ida e volta)."),
     ("BA", "Salvador",       "SSA", "Nordeste",      620, None, None),
     ("CE", "Fortaleza",      "FOR", "Nordeste",      585, None, None),
     ("MA", "São Luís",       "SLZ", "Nordeste",      760, None, None),
     ("PB", "João Pessoa",    "JPA", "Nordeste",      465, None,
-     "João Pessoa fica a 120 km: ônibus leva ~2h por ~R$ 45 ida e volta. Voar raramente compensa."),
+     "João Pessoa fica a 120 km: ônibus leva ~2h, a partir de R$ 27 por trecho (~R$ 60 ida e volta). Voar raramente compensa."),
     ("PE", "Recife",         "REC", "Nordeste",        0, None, None),  # anfitriã
     ("PI", "Teresina",       "THE", "Nordeste",      700, None, None),
     ("RN", "Natal",          "NAT", "Nordeste",      500, None,
-     "Natal fica a 300 km: ônibus leva ~4h30 por ~R$ 110 ida e volta."),
+     "Natal fica a 300 km: ônibus leva ~4h30, a partir de R$ 74 por trecho (~R$ 150 ida e volta)."),
     ("SE", "Aracaju",        "AJU", "Nordeste",      555, None, None),
 
     ("DF", "Brasília",       "BSB", "Centro-Oeste",  800, None, None),
@@ -145,12 +182,12 @@ CENARIOS = [
         "hospNight": 85,
         "hospWhat": "cama em quarto compartilhado",
         "hotelFilter": "ht_id%3D203",  # Booking: tipo hostel
-        "meals": {"cafe": 12, "almoco": 25, "jantar": 23},
+        "meals": {"cafe": 12, "almoco": 30, "jantar": 24},
         "mealsWhat": "padaria, prato feito e lanche à noite",
         "transit": {
-            "busRides": 4, "busFare": 4.90,
+            "busRides": 4, "busFare": 4.50,
             "uberRides": 1, "uberFare": 7.00,
-            "airportRides": 2, "airportFare": 22.00,
+            "airportRides": 2, "airportFare": 23.00,
         },
         "transitWhat": "4 embarques de ônibus/metrô + 1 Uber noturno dividido entre 4",
     },
@@ -158,15 +195,15 @@ CENARIOS = [
         "key": "inter",
         "name": "Intermediário",
         "desc": "Hotel 3 estrelas em quarto duplo, self-service e mix de ônibus e Uber.",
-        "hospNight": 145,
-        "hospWhat": "quarto duplo (~R$ 290 a diária), valor por pessoa",
+        "hospNight": 140,
+        "hospWhat": "quarto duplo (~R$ 280 a diária), valor por pessoa",
         "hotelFilter": "class%3D3",
-        "meals": {"cafe": 18, "almoco": 42, "jantar": 35},
+        "meals": {"cafe": 18, "almoco": 45, "jantar": 36},
         "mealsWhat": "café do hotel, self-service por quilo e jantar simples",
         "transit": {
-            "busRides": 2, "busFare": 4.90,
+            "busRides": 2, "busFare": 4.50,
             "uberRides": 1, "uberFare": 24.00,
-            "airportRides": 2, "airportFare": 22.00,
+            "airportRides": 2, "airportFare": 23.00,
         },
         "transitWhat": "2 embarques de ônibus + 1 corrida de Uber por dia",
     },
@@ -174,28 +211,57 @@ CENARIOS = [
         "key": "conforto",
         "name": "Conforto",
         "desc": "Hotel 4 estrelas na orla, restaurantes à la carte e Uber em todos os trajetos.",
-        "hospNight": 260,
-        "hospWhat": "4 estrelas na orla (~R$ 520 a diária), valor por pessoa",
+        "hospNight": 200,
+        "hospWhat": "4 estrelas na orla (~R$ 400 a diária), valor por pessoa",
         "hotelFilter": "class%3D4",
         "meals": {"cafe": 30, "almoco": 65, "jantar": 65},
         "mealsWhat": "restaurantes à la carte no almoço e no jantar",
         "transit": {
             "busRides": 0, "busFare": 0,
             "uberRides": 2, "uberFare": 34.00,
-            "airportRides": 2, "airportFare": 26.00,
+            "airportRides": 2, "airportFare": 23.00,
         },
         "transitWhat": "2 corridas de Uber por dia, sem transporte público",
     },
 ]
 
 
+# Tarifa aérea doméstica média por trecho — ANAC, maio de 2026.
+# Serve de âncora de NÍVEL enquanto não há observação suficiente por rota.
+ANAC_TARIFA_MEDIA_TRECHO = 632.53
+OBSERVACOES_MINIMAS = 5  # a partir daqui as observações substituem a âncora
+
+
 def fator_calibracao(observacoes):
-    """Média entre cotação observada e estimativa do modelo, nas rotas conferidas."""
+    """Quanto o modelo base precisa ser multiplicado para bater com a realidade.
+
+    Dois regimes, e o segundo é melhor:
+
+    1. POUCAS OBSERVAÇÕES -> ancora o nível na média oficial da ANAC. Calibrar
+       a tabela inteira pela razão de uma única rota superestima: uma rota-tronco
+       como SP-REC é mais barata que a média nacional, então o fator dela não
+       descreve as outras. Foi o erro da primeira versão (fator 1,52, que jogava
+       a tabela 20% acima da ANAC).
+
+    2. OBSERVACOES_MINIMAS OU MAIS -> usa a razão média observada/modelo, que a
+       essa altura já descreve o mercado melhor que a média nacional.
+
+    Em qualquer regime, rota observada vale o preço real, não o calibrado.
+    """
     base = {uf: b for uf, _, _, _, b, _, _ in BASE_VOO}
+
     razoes = [obs["preco"] / base[uf]
               for uf, obs in observacoes.items()
               if base.get(uf)]
-    return sum(razoes) / len(razoes) if razoes else 1.0
+
+    if len(razoes) >= OBSERVACOES_MINIMAS:
+        return sum(razoes) / len(razoes)
+
+    # Âncora ANAC: a média ida e volta da tabela deve bater com a média nacional.
+    precos = [b for b in base.values() if b]
+    media_base = sum(precos) / len(precos)
+    alvo = ANAC_TARIFA_MEDIA_TRECHO * 2
+    return alvo / media_base if media_base else 1.0
 
 
 def montar_voos(fator, observacoes):
@@ -255,6 +321,7 @@ def montar_payload():
             "evento": "ENEJ 27",
             "atualizado_em": date.today().isoformat(),
             "fonte": "tools/gerar_cotacoes.py",
+            "fontes": FONTES,
             "calibracao": {
                 "fator": round(fator, 4),
                 "observacoes": len(conferidas),

@@ -671,6 +671,10 @@ footer code{
         <p>Os lotes do ENEJ 27 ainda não foram divulgados, então o ingresso está <b>fora</b> da interface e do total. A constante <code>TICKET</code> no JS já está preparada para reativá-lo quando o valor sair.</p>
       </div>
       <div>
+        <h4>Fontes</h4>
+        <p>Cada número tem procedência declarada: <b>verde</b> = cotação real conferida na fonte, <b>âmbar</b> = estimativa. O nível da tabela de passagens está ancorado na tarifa média doméstica da ANAC. O inventário completo — com URL e data de cada consulta, e a lista do que <i>não</i> tem fonte — está em <a href="https://github.com/victoralbertins/enej27-painel-custos/blob/main/FONTES.md" target="_blank" rel="noopener">FONTES.md</a>.</p>
+      </div>
+      <div>
         <h4>Dados</h4>
         <p>O painel faz um <code>fetch()</code> real em <code>API_ENDPOINT</code>, que serve <code>data/cotacoes-enej27.json</code> — gerado por <code>tools/gerar_cotacoes.py</code>, o mesmo script que você porta para o BigQuery. Se a chamada falhar, o painel cai no payload interno e o selo abaixo avisa. Reconfirme os valores próximo à data de compra.</p>
       </div>
@@ -834,8 +838,52 @@ const FALLBACK_PAYLOAD = {
     "evento": "ENEJ 27",
     "atualizado_em": "2026-09-15",
     "fonte": "tools/gerar_cotacoes.py",
+    "fontes": [
+      {
+        "item": "Tarifa de ônibus urbano (Anel A, R$ 4,50)",
+        "fonte": "Grande Recife Consórcio de Transporte / Folha PE",
+        "url": "https://www.folhape.com.br/noticias/aumento-da-passagem-de-onibus-no-grande-recife-e-homologado-e-anel-a/463122/",
+        "consultado_em": "2026-09-15"
+      },
+      {
+        "item": "Uber aeroporto REC <-> Boa Viagem (R$ 23, 5,71 km)",
+        "fonte": "Uber (página oficial de estimativa da rota)",
+        "url": "https://www.uber.com/global/en/r/routes/recife-pe-br-to-rec/",
+        "consultado_em": "2026-09-15"
+      },
+      {
+        "item": "Prato feito (R$ 30-31,90)",
+        "fonte": "Abrasel, via Mercado&Consumo",
+        "url": "https://mercadoeconsumo.com.br/07/05/2026/foodservice/alimentacao-fora-de-casa-fica-mais-cara-e-prato-feito-atinge-media-de-r-3027/",
+        "consultado_em": "2026-09-15"
+      },
+      {
+        "item": "Diária média em Recife (R$ 280 o quarto duplo)",
+        "fonte": "Dicas de Viagem / Viaje na Viagem (levantamento de mercado)",
+        "url": "https://www.dicasdeviagem.com/hoteis-em-recife/",
+        "consultado_em": "2026-09-15"
+      },
+      {
+        "item": "Tarifa aérea doméstica média (R$ 632,53 por trecho, mai/2026)",
+        "fonte": "ANAC — dados tarifários mensais",
+        "url": "https://www.gov.br/anac/pt-br/noticias/2026/anac-publica-dados-tarifarios-do-mes-de-maio-de-2026",
+        "consultado_em": "2026-09-15"
+      },
+      {
+        "item": "Passagem rodoviária João Pessoa / Natal / Maceió",
+        "fonte": "ClickBus e CheckMyBus",
+        "url": "https://www.clickbus.com.br/onibus/joao-pessoa-pb",
+        "consultado_em": "2026-09-15"
+      },
+      {
+        "item": "Cotação real SP -> REC ida e volta (R$ 1.154)",
+        "fonte": "Kayak, conferida pelo usuário",
+        "url": "https://www.kayak.com.br/flights/SAO-REC/2027-08-25/2027-08-30",
+        "consultado_em": "2026-09-14"
+      }
+    ],
     "calibracao": {
-      "fator": 1.5184,
+      "fator": 1.3244,
       "observacoes": 1,
       "ufs": [
         "SP"
@@ -850,8 +898,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "RBR",
       "searchIata": "RBR",
       "regiao": "Norte",
-      "low": 2187,
-      "high": 3553,
+      "low": 1907,
+      "high": 3099,
       "origem": "estimado",
       "host": false
     },
@@ -861,8 +909,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "MCP",
       "searchIata": "MCP",
       "regiao": "Norte",
-      "low": 1579,
-      "high": 2566,
+      "low": 1377,
+      "high": 2238,
       "origem": "estimado",
       "host": false
     },
@@ -872,8 +920,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "MAO",
       "searchIata": "MAO",
       "regiao": "Norte",
-      "low": 1670,
-      "high": 2714,
+      "low": 1457,
+      "high": 2367,
       "origem": "estimado",
       "host": false
     },
@@ -883,8 +931,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "BEL",
       "searchIata": "BEL",
       "regiao": "Norte",
-      "low": 1093,
-      "high": 1777,
+      "low": 954,
+      "high": 1550,
       "origem": "estimado",
       "host": false
     },
@@ -894,8 +942,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "PVH",
       "searchIata": "PVH",
       "regiao": "Norte",
-      "low": 1944,
-      "high": 3158,
+      "low": 1695,
+      "high": 2755,
       "origem": "estimado",
       "host": false
     },
@@ -905,8 +953,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "BVB",
       "searchIata": "BVB",
       "regiao": "Norte",
-      "low": 2065,
-      "high": 3356,
+      "low": 1801,
+      "high": 2927,
       "origem": "estimado",
       "host": false
     },
@@ -916,8 +964,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "PMW",
       "searchIata": "PMW",
       "regiao": "Norte",
-      "low": 1306,
-      "high": 2122,
+      "low": 1139,
+      "high": 1851,
       "origem": "estimado",
       "host": false
     },
@@ -927,11 +975,11 @@ const FALLBACK_PAYLOAD = {
       "iata": "MCZ",
       "searchIata": "MCZ",
       "regiao": "Nordeste",
-      "low": 607,
-      "high": 987,
+      "low": 530,
+      "high": 861,
       "origem": "estimado",
       "host": false,
-      "nota": "Maceió fica a 260 km: ônibus leva ~4h por ~R$ 90 ida e volta, bem abaixo do voo."
+      "nota": "Maceió fica a 260 km: ônibus leva ~4h, a partir de R$ 100 por trecho (~R$ 200 ida e volta)."
     },
     {
       "uf": "BA",
@@ -939,8 +987,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "SSA",
       "searchIata": "SSA",
       "regiao": "Nordeste",
-      "low": 753,
-      "high": 1224,
+      "low": 657,
+      "high": 1067,
       "origem": "estimado",
       "host": false
     },
@@ -950,8 +998,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "FOR",
       "searchIata": "FOR",
       "regiao": "Nordeste",
-      "low": 711,
-      "high": 1155,
+      "low": 620,
+      "high": 1007,
       "origem": "estimado",
       "host": false
     },
@@ -961,8 +1009,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "SLZ",
       "searchIata": "SLZ",
       "regiao": "Nordeste",
-      "low": 923,
-      "high": 1500,
+      "low": 805,
+      "high": 1309,
       "origem": "estimado",
       "host": false
     },
@@ -972,11 +1020,11 @@ const FALLBACK_PAYLOAD = {
       "iata": "JPA",
       "searchIata": "JPA",
       "regiao": "Nordeste",
-      "low": 565,
-      "high": 918,
+      "low": 493,
+      "high": 801,
       "origem": "estimado",
       "host": false,
-      "nota": "João Pessoa fica a 120 km: ônibus leva ~2h por ~R$ 45 ida e volta. Voar raramente compensa."
+      "nota": "João Pessoa fica a 120 km: ônibus leva ~2h, a partir de R$ 27 por trecho (~R$ 60 ida e volta). Voar raramente compensa."
     },
     {
       "uf": "PE",
@@ -995,8 +1043,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "THE",
       "searchIata": "THE",
       "regiao": "Nordeste",
-      "low": 850,
-      "high": 1382,
+      "low": 742,
+      "high": 1205,
       "origem": "estimado",
       "host": false
     },
@@ -1006,11 +1054,11 @@ const FALLBACK_PAYLOAD = {
       "iata": "NAT",
       "searchIata": "NAT",
       "regiao": "Nordeste",
-      "low": 607,
-      "high": 987,
+      "low": 530,
+      "high": 861,
       "origem": "estimado",
       "host": false,
-      "nota": "Natal fica a 300 km: ônibus leva ~4h30 por ~R$ 110 ida e volta."
+      "nota": "Natal fica a 300 km: ônibus leva ~4h30, a partir de R$ 74 por trecho (~R$ 150 ida e volta)."
     },
     {
       "uf": "SE",
@@ -1018,8 +1066,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "AJU",
       "searchIata": "AJU",
       "regiao": "Nordeste",
-      "low": 674,
-      "high": 1096,
+      "low": 588,
+      "high": 956,
       "origem": "estimado",
       "host": false
     },
@@ -1029,8 +1077,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "BSB",
       "searchIata": "BSB",
       "regiao": "Centro-Oeste",
-      "low": 972,
-      "high": 1579,
+      "low": 848,
+      "high": 1377,
       "origem": "estimado",
       "host": false
     },
@@ -1040,8 +1088,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "GYN",
       "searchIata": "GYN",
       "regiao": "Centro-Oeste",
-      "low": 1142,
-      "high": 1856,
+      "low": 996,
+      "high": 1618,
       "origem": "estimado",
       "host": false
     },
@@ -1051,8 +1099,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "CGB",
       "searchIata": "CGB",
       "regiao": "Centro-Oeste",
-      "low": 1397,
-      "high": 2270,
+      "low": 1218,
+      "high": 1980,
       "origem": "estimado",
       "host": false
     },
@@ -1062,8 +1110,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "CGR",
       "searchIata": "CGR",
       "regiao": "Centro-Oeste",
-      "low": 1446,
-      "high": 2349,
+      "low": 1261,
+      "high": 2049,
       "origem": "estimado",
       "host": false
     },
@@ -1073,8 +1121,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "VIX",
       "searchIata": "VIX",
       "regiao": "Sudeste",
-      "low": 1033,
-      "high": 1678,
+      "low": 901,
+      "high": 1463,
       "origem": "estimado",
       "host": false
     },
@@ -1084,8 +1132,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "CNF",
       "searchIata": "CNF",
       "regiao": "Sudeste",
-      "low": 990,
-      "high": 1609,
+      "low": 864,
+      "high": 1403,
       "origem": "estimado",
       "host": false
     },
@@ -1095,8 +1143,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "GIG",
       "searchIata": "RIO",
       "regiao": "Sudeste",
-      "low": 954,
-      "high": 1550,
+      "low": 832,
+      "high": 1352,
       "origem": "estimado",
       "host": false
     },
@@ -1118,8 +1166,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "CWB",
       "searchIata": "CWB",
       "regiao": "Sul",
-      "low": 1184,
-      "high": 1925,
+      "low": 1033,
+      "high": 1679,
       "origem": "estimado",
       "host": false
     },
@@ -1129,8 +1177,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "FLN",
       "searchIata": "FLN",
       "regiao": "Sul",
-      "low": 1257,
-      "high": 2043,
+      "low": 1097,
+      "high": 1782,
       "origem": "estimado",
       "host": false
     },
@@ -1140,8 +1188,8 @@ const FALLBACK_PAYLOAD = {
       "iata": "POA",
       "searchIata": "POA",
       "regiao": "Sul",
-      "low": 1336,
-      "high": 2171,
+      "low": 1165,
+      "high": 1894,
       "origem": "estimado",
       "host": false
     }
@@ -1156,17 +1204,17 @@ const FALLBACK_PAYLOAD = {
       "hotelFilter": "ht_id%3D203",
       "meals": {
         "cafe": 12,
-        "almoco": 25,
-        "jantar": 23
+        "almoco": 30,
+        "jantar": 24
       },
       "mealsWhat": "padaria, prato feito e lanche à noite",
       "transit": {
         "busRides": 4,
-        "busFare": 4.9,
+        "busFare": 4.5,
         "uberRides": 1,
         "uberFare": 7.0,
         "airportRides": 2,
-        "airportFare": 22.0
+        "airportFare": 23.0
       },
       "transitWhat": "4 embarques de ônibus/metrô + 1 Uber noturno dividido entre 4",
       "hospOrigem": "estimado"
@@ -1175,22 +1223,22 @@ const FALLBACK_PAYLOAD = {
       "key": "inter",
       "name": "Intermediário",
       "desc": "Hotel 3 estrelas em quarto duplo, self-service e mix de ônibus e Uber.",
-      "hospNight": 145,
-      "hospWhat": "quarto duplo (~R$ 290 a diária), valor por pessoa",
+      "hospNight": 140,
+      "hospWhat": "quarto duplo (~R$ 280 a diária), valor por pessoa",
       "hotelFilter": "class%3D3",
       "meals": {
         "cafe": 18,
-        "almoco": 42,
-        "jantar": 35
+        "almoco": 45,
+        "jantar": 36
       },
       "mealsWhat": "café do hotel, self-service por quilo e jantar simples",
       "transit": {
         "busRides": 2,
-        "busFare": 4.9,
+        "busFare": 4.5,
         "uberRides": 1,
         "uberFare": 24.0,
         "airportRides": 2,
-        "airportFare": 22.0
+        "airportFare": 23.0
       },
       "transitWhat": "2 embarques de ônibus + 1 corrida de Uber por dia",
       "hospOrigem": "estimado"
@@ -1199,8 +1247,8 @@ const FALLBACK_PAYLOAD = {
       "key": "conforto",
       "name": "Conforto",
       "desc": "Hotel 4 estrelas na orla, restaurantes à la carte e Uber em todos os trajetos.",
-      "hospNight": 260,
-      "hospWhat": "4 estrelas na orla (~R$ 520 a diária), valor por pessoa",
+      "hospNight": 200,
+      "hospWhat": "4 estrelas na orla (~R$ 400 a diária), valor por pessoa",
       "hotelFilter": "class%3D4",
       "meals": {
         "cafe": 30,
@@ -1214,7 +1262,7 @@ const FALLBACK_PAYLOAD = {
         "uberRides": 2,
         "uberFare": 34.0,
         "airportRides": 2,
-        "airportFare": 26.0
+        "airportFare": 23.0
       },
       "transitWhat": "2 corridas de Uber por dia, sem transporte público",
       "hospOrigem": "estimado"
