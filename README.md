@@ -64,7 +64,7 @@ acontece **fora do navegador**:
 ```
 GitHub Actions (semanal)
   └─ tools/cotacoes_amadeus.py   busca preços reais na Amadeus  ──► data/observacoes.json
-       └─ tools/gerar_cotacoes.py   funde, calibra e publica    ──► data/cotacoes-enej27.json
+       └─ tools/gerar_cotacoes.py   funde e publica             ──► data/cotacoes-enej27.json
             └─ o painel lê esse JSON já pronto
 ```
 
@@ -82,22 +82,32 @@ A chave fica em secrets do repositório e nunca chega ao cliente.
 4. **Actions → Atualizar cotações → Run workflow** para rodar na hora. Depois roda sozinho
    toda segunda.
 
-Sem os secrets, o workflow não quebra: o passo de busca é pulado e o painel segue com as
-estimativas calibradas.
+Sem os secrets, o workflow não quebra: o passo de busca é pulado e o painel segue com a
+estatística de 12 meses de cada rota.
 
-### Calibração, enquanto a cobertura não é total
+### Procedência dos preços
 
-Voo para agosto de 2027 está no limite do horizonte de publicação das companhias (~11
-meses), então parte das rotas volta vazia. Para essas, o painel usa uma estimativa — mas
-não um chute solto: cada cotação real conferida recalibra o modelo inteiro.
+Não há mais estimativa nas passagens: **as 26 origens têm dado real**, levantado nas
+páginas de rota do Kayak (estatística observada de 12 meses). O inventário com a URL de
+cada rota está em [FONTES.md](FONTES.md) e [FONTES.csv](FONTES.csv).
 
-A primeira observação real (São Paulo, Kayak, R$ 1.154 contra R$ 760 estimados) revelou um
-fator de **1,52** — o modelo original subestimava tudo em ~1/3. Esse fator foi aplicado a
-todas as rotas não observadas.
+O painel classifica cada número em três regimes, com selo próprio:
 
-O painel marca cada número: **cotação real** (verde) ou **estimativa** (âmbar), e o rodapé
-mostra quantas origens já têm preço real por trás. Conforme a busca automática cobre mais
-rotas, o verde toma conta.
+| Selo | Significa |
+|---|---|
+| **cotação datada** (verde) | preço para as datas exatas do evento — o melhor dado |
+| **dado real** (azul) | estatística observada da rota nos últimos 12 meses |
+| **estimativa** (âmbar) | sem cotação por trás |
+
+A precedência é essa ordem: quando a busca da Amadeus traz preço datado para uma rota, ele
+sobrepõe a estatística de 12 meses.
+
+**Aferição:** a média de ida e volta da tabela fica em R$ 1.300, ou +3% sobre a média
+nacional da ANAC (2 × R$ 632,53 por trecho, mai/2026) — coerente com rotas que terminam no
+Nordeste.
+
+Alimentação, transporte intraurbano e diárias de hostel seguem como estimativa; a seção 3
+do [FONTES.md](FONTES.md) lista cada uma e por quê.
 
 > **Limite honesto:** o ambiente de teste da Amadeus é gratuito mas tem cobertura parcial
 > de rotas. Para cobertura total, troque `AMADEUS_HOST` para o host de produção. Os links
@@ -121,35 +131,43 @@ Enquanto a API não existir, `loadDynamicData()` cai automaticamente no payload 
 `simulatedPayload()` e o painel continua funcionando. O selo no rodapé mostra qual fonte
 está em uso.
 
-> **O painel diz "base de referência" — isso é erro?** Não. `api.exemplo.com` é um endereço
-> fictício, então o `fetch()` falha no DNS, o `catch` assume e o painel usa a base interna.
-> É o fallback projetado: o painel nunca quebra enquanto o backend não existe. Assim que
-> `API_ENDPOINT` apontar para um serviço real que responda o contrato abaixo, o selo vira
-> "em tempo real" sozinho.
-
 ### Contrato do JSON
 
 Sua query no BigQuery deve devolver exatamente este shape:
 
 ```json
 {
-  "meta":  { "moeda": "BRL", "atualizado_em": "2026-09-14", "fonte": "bigquery", "destino": "REC" },
-  "voos":  [
-    { "uf": "SP", "capital": "São Paulo", "iata": "GRU", "regiao": "Sudeste",
-      "low": 600, "high": 920, "host": false }
+  "meta": {
+    "moeda": "BRL", "destino": "REC", "atualizado_em": "2026-09-15", "fonte": "bigquery",
+    "calibracao": { "rotas_com_dado": 26, "cotacoes_datadas": 1, "levantado_em": "2026-09-15" }
+  },
+  "voos": [
+    { "uf": "SP", "capital": "São Paulo", "iata": "GRU", "searchIata": "SAO",
+      "regiao": "Sudeste", "low": 873, "high": 1513, "mid": 1085, "barato": 758,
+      "origem": "observado", "conferido": "Kayak (12 meses), 2026-09-15",
+      "fonte_url": "https://www.kayak.com.br/flight-routes/Sao-Paulo-SAO/Recife-REC",
+      "host": false }
   ],
   "tiers": [
     { "key": "econ", "name": "Econômico", "desc": "...",
-      "hospNight": 70, "hospWhat": "cama em quarto compartilhado", "hotelFilter": "ht_id%3D203",
-      "meals":   { "cafe": 12, "almoco": 25, "jantar": 23 },
+      "hospNight": 85, "hospWhat": "cama em quarto compartilhado",
+      "hotelFilter": "ht_id%3D203", "hospOrigem": "estimado",
+      "meals": { "cafe": 12, "almoco": 30, "jantar": 24 },
       "mealsWhat": "padaria, prato feito e lanche à noite",
-      "transit": { "rides": 4, "fare": 4.90, "app": 0, "appFare": 0 },
-      "transitWhat": "4 embarques de ônibus/metrô por dia" }
+      "transit": { "busRides": 4, "busFare": 4.50, "uberRides": 1, "uberFare": 7.00,
+                   "airportRides": 2, "airportFare": 23.00 },
+      "transitWhat": "4 embarques de ônibus/metrô + 1 Uber noturno dividido entre 4" }
   ]
 }
 ```
 
-- `low` / `high`: faixa da passagem **ida e volta** em BRL, com 8+ semanas de antecedência.
+- `low` / `high`: faixa típica da passagem **ida e volta** em BRL.
+- `mid`: o valor que o painel usa. **Obrigatório** — não é o meio da faixa, e calcular
+  `(low+high)/2` inflaria a conta.
+- `barato`: menor preço já encontrado na rota, exibido no bilhete.
+- `origem`: `datado` (preço para as datas do evento) · `observado` (estatística da rota) ·
+  `estimado` (sem lastro). Define o selo de procedência na interface.
+- `searchIata`: código usado nos links de busca — metropolitano onde existe (SAO, RIO, BHZ).
 - `host: true`: federação anfitriã (PE) — zera o custo aéreo.
 - Os cenários são descritos por **valor unitário**, não por total fechado. `normalize()`
   multiplica pelas noites/dias do `EVENT`, e é isso que permite mostrar a memória de
@@ -170,21 +188,28 @@ alimentação = (café + almoço + jantar) × 6 dias
 
 | Cenário | Café | Almoço | Jantar | Por dia | Total |
 |---|---|---|---|---|---|
-| Econômico | 12 | 25 | 23 | 60 | 360 |
-| Intermediário | 18 | 42 | 35 | 95 | 570 |
+| Econômico | 12 | 30 | 24 | 66 | 396 |
+| Intermediário | 18 | 45 | 36 | 99 | 594 |
 | Conforto | 30 | 65 | 65 | 160 | 960 |
+
+O almoço vem do índice Abrasel do prato feito; café e jantar são estimativa.
 
 **Transporte interno** — deslocamentos diários entre Boa Viagem e a sede:
 
 ```
-transporte = (embarques × tarifa + corridas × preço) × 6 dias × fator da sede
+transporte = (ônibus × tarifa + Uber × preço) × 6 dias × fator da sede
+            + traslado do aeroporto (ida e volta)
 ```
 
-| Cenário | Composição diária | Por dia | Total (fator 1,00) |
-|---|---|---|---|
-| Econômico | 4 × R$ 4,90 (ônibus/metrô) | 19,60 | 118 |
-| Intermediário | 2 × R$ 4,90 + 1 × R$ 24 (app) | 33,80 | 203 |
-| Conforto | 2 × R$ 34 (app) | 68,00 | 408 |
+O **traslado do aeroporto** (REC ↔ Boa Viagem, R$ 23 por corrida) é cobrado uma vez na
+viagem e fica **fora** do fator da sede: esse trajeto é o mesmo independente de onde o
+evento aconteça.
+
+| Cenário | Composição diária | Por dia | Traslado | Total (Geraldão) |
+|---|---|---|---|---|
+| Econômico | 4 × R$ 4,50 (ônibus) + 1 × R$ 7 (Uber dividido) | 25,00 | 46 | 196 |
+| Intermediário | 2 × R$ 4,50 (ônibus) + 1 × R$ 24 (Uber) | 33,00 | 46 | 244 |
+| Conforto | 2 × R$ 34 (Uber) | 68,00 | 46 | 454 |
 
 O **fator da sede** sai de `1 + (km ÷ 6 − 1) × 0,30`, com o Geraldão (~6 km) como
 referência. O amortecimento de 0,30 existe porque dobrar a distância não dobra o gasto:

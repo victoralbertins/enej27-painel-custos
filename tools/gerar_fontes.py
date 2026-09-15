@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """
-Gera FONTES.csv — a planilha de procedência de cada número do painel.
+Gera FONTES.csv e FONTES.md — a procedência de cada número do painel.
 
     python tools/gerar_fontes.py
 
-A planilha sai do MESMO dado que alimenta o painel (data/cotacoes-enej27.json),
-então ela não tem como divergir dos números publicados. Abre direto no Excel,
-Google Sheets ou LibreOffice.
+Os dois saem do MESMO dado que alimenta o painel (data/cotacoes-enej27.json),
+então não têm como divergir dos números publicados. O CSV abre direto no Excel,
+Google Sheets ou LibreOffice; o MD é a versão legível no GitHub.
+
+Ambos são GERADOS: não edite à mão, edite a fonte e rode o script.
 
 Colunas:
     categoria      Passagem aérea / Hospedagem / Alimentação / ...
@@ -26,7 +28,8 @@ import pathlib
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
 ENTRADA = RAIZ / "data" / "cotacoes-enej27.json"
-SAIDA = RAIZ / "FONTES.csv"
+SAIDA_CSV = RAIZ / "FONTES.csv"
+SAIDA_MD = RAIZ / "FONTES.md"
 
 CABECALHO = ["categoria", "item", "valor", "unidade", "procedencia",
              "fonte", "url", "consultado_em", "observacao"]
@@ -150,18 +153,162 @@ def linhas_voos(dados):
         ]
 
 
+def tabela_md(cabecalho, linhas):
+    out = ["| " + " | ".join(cabecalho) + " |",
+           "|" + "|".join("---" for _ in cabecalho) + "|"]
+    for l in linhas:
+        out.append("| " + " | ".join(str(c).replace("|", "/") for c in l) + " |")
+    return "\n".join(out)
+
+
+def escrever_md(dados, linhas_voo, anac_rt, media_rt):
+    voos = sorted((v for v in dados["voos"] if not v["host"]),
+                  key=lambda v: v["mid"])
+    cal = dados["meta"]["calibracao"]
+
+    br = lambda n: f"{n:,}".replace(",", ".")
+    rotas = [[
+        v["uf"],
+        v["capital"],
+        br(v["low"]) + "–" + br(v["high"]),
+        "**" + br(v["mid"]) + "**",
+        br(v["barato"]),
+        "datada" if v["origem"] == "datado" else "12 meses",
+        f"[↗]({v['fonte_url']})" if v.get("fonte_url") else "—",
+    ] for v in voos]
+
+    # Descasamento entre a media observada e o meio da faixa. Calculado, nao
+    # fixado no texto, para nao divergir quando os dados mudarem.
+    stats = [v for v in voos if v["origem"] == "observado"]
+    pior = max(stats, key=lambda v: (v["low"] + v["high"]) / 2 - v["mid"])
+    meio = round((pior["low"] + pior["high"]) / 2)
+    desvio = (meio - pior["mid"]) / pior["mid"] * 100
+
+    soma_mid = sum(v["mid"] for v in stats)
+    soma_meio = sum((v["low"] + v["high"]) / 2 for v in stats)
+    agregado = (soma_meio - soma_mid) / soma_mid * 100
+
+    exemplo = (f"a maior distância está em {pior['capital']}: média de "
+               f"R$ {br(pior['mid'])} contra R$ {br(meio)} no meio da faixa, "
+               f"{desvio:+.0f}%. No agregado das {len(stats)} rotas, o meio da faixa "
+               f"fica **{agregado:+.0f}%** acima da média observada")
+
+    com_fonte = [o for o in OUTROS if o[4] in ("dado real", "cotação datada")
+                 and o[0] != "Evento"]
+    sem_fonte = [o for o in OUTROS if o[4] == "estimativa"]
+
+    md = f"""# Fontes dos valores do painel
+
+> **Arquivo gerado.** Sai de `data/cotacoes-enej27.json` via
+> `python tools/gerar_fontes.py`. Não edite à mão — edite a fonte e rode o script.
+> Versão em planilha: [FONTES.csv](FONTES.csv) (separador `;`, abre no Excel).
+
+Levantamento em **15 de setembro de 2026**.
+
+A regra de leitura: **dado real** tem cotação por trás; **estimativa** não tem, e o
+painel marca esses casos em âmbar.
+
+---
+
+## 1. Passagens aéreas — {cal['rotas_com_dado']} de {cal['rotas_com_dado']} rotas com dado real
+
+Levantadas nas páginas de rota do Kayak, uma por origem. Cada página publica a
+estatística observada dos últimos 12 meses. Valores de **ida e volta em R$**, ordenados
+do mais barato ao mais caro.
+
+{tabela_md(["UF", "Origem", "Faixa típica", "Média (usada)", "Menor achado", "Base", "Fonte"], rotas)}
+
+A coluna **Base** diz de onde vem a linha: `12 meses` é a estatística da rota;
+`datada` é uma cotação para as datas exatas do evento, que tem precedência quando existe.
+
+**A média é o valor que o painel usa**, não o meio da faixa típica. Os dois não
+coincidem, e a diferença varia de rota para rota: {exemplo}. É por isso que o campo `mid`
+vem explícito no JSON — calcular `(low+high)/2` inflaria a conta do congressista.
+
+Não são cotações para as datas exatas do evento: são a estatística da rota. Quando o
+[pipeline da Amadeus](README.md#cotações-automáticas) estiver ligado, ele sobrepõe estes
+valores com preço datado, e a linha passa a exibir *cotação datada*.
+
+---
+
+## 2. Demais valores com fonte
+
+{tabela_md(["Categoria", "Item", "Valor", "Fonte", "Onde conferir"],
+           [[o[0], o[1], o[2], o[5], f"[↗]({o[6]})" if o[6] else "—"] for o in com_fonte])}
+
+---
+
+## 3. Sem fonte — use com ceticismo
+
+Estes números **não** foram verificados. São julgamento de mercado, e o painel os marca
+como estimativa.
+
+{tabela_md(["Categoria", "Item", "Valor", "Por que não tem fonte"],
+           [[o[0], o[1], o[2], o[8] or "sem índice publicado"] for o in sem_fonte])}
+
+---
+
+## 4. Hipóteses de trabalho
+
+| Item | Adotado | Situação |
+|---|---|---|
+| Datas do ENEJ 27 | 25 a 30/08/2027 | **Não divulgadas.** O [site oficial](https://enej.brasiljunior.org.br/) ainda mostra o ENEJ'26. A janela de agosto replica a do ENEJ 26. |
+| Sede | 4 candidatas simuláveis | Não definida — por isso é um seletor. |
+| Estadia | 5 pernoites / 6 dias | Herdado do painel do ENEJ 26. |
+| Ingresso | fora do cálculo | Lotes não divulgados. |
+| Sazonalidade (8+ semanas, até +80%) | mantida | Herdada do código do ENEJ 26, não verificada por mim. |
+
+---
+
+## 5. Aferição
+
+A média de ida e volta da tabela está em **R$ {media_rt:,.0f}**, ou **{media_rt/anac_rt*100-100:+.0f}%**
+sobre a média nacional da ANAC de R$ {anac_rt:,.0f} (2 × R$ {anac_rt/2:,.2f} por trecho, mai/2026).
+Coerente: todas as rotas terminam em Recife, mais distante que a média dos pares nacionais.
+
+**Correção de método, para registro.** As duas versões anteriores partiam de um modelo
+estimado por distância e o corrigiam por um fator. A primeira calibrava pela razão de uma
+única rota (São Paulo), o que superestimava — SP–REC é rota-tronco e custa *menos* que a
+média nacional, então o fator dela não descrevia as outras. A segunda ancorou o nível na
+ANAC, o que melhorou mas seguia sendo estimativa. Esta versão **elimina o modelo**: cada
+rota tem o seu próprio dado observado.
+
+**Achado que o dado real expôs:** voar de João Pessoa custa em média **mais** que de São
+Paulo (R$ 1.162 contra R$ 1.085) para 120 km de distância. Por isso o painel alerta,
+nessa origem, que o ônibus custa a partir de R$ 27 por trecho.
+
+---
+
+## 6. O que fecharia as lacunas
+
+- **Passagens com data e hotéis:** o [pipeline da Amadeus](README.md#cotações-automáticas)
+  — falta cadastrar as credenciais.
+- **Alimentação e transporte intraurbano:** não existe API. O que resolve é alguém que
+  more em Recife conferir. A FEJEPE é a fonte certa.
+- **Distâncias das sedes:** medir no Google Maps quando a sede for definida.
+"""
+    SAIDA_MD.write_text(md, encoding="utf-8", newline="\n")
+
+
 def main():
     dados = json.loads(ENTRADA.read_text(encoding="utf-8"))
+    linhas_voo = list(linhas_voos(dados))
+    linhas = linhas_voo + [list(o) for o in OUTROS]
 
-    with open(SAIDA, "w", encoding="utf-8-sig", newline="") as f:
+    with open(SAIDA_CSV, "w", encoding="utf-8-sig", newline="") as f:
         w = csv.writer(f, delimiter=";")
         w.writerow(CABECALHO)
-        linhas = list(linhas_voos(dados)) + [list(o) for o in OUTROS]
         w.writerows(linhas)
 
+    voos = [v for v in dados["voos"] if not v["host"]]
+    media_rt = sum(v["mid"] for v in voos) / len(voos)
+    anac_rt = 632.53 * 2
+    escrever_md(dados, linhas_voo, anac_rt, media_rt)
+
     reais = sum(1 for l in linhas if l[4] in ("dado real", "cotação datada"))
-    print(f"{SAIDA.name}: {len(linhas)} linhas "
+    print(f"{SAIDA_CSV.name}: {len(linhas)} linhas "
           f"({reais} com fonte, {len(linhas) - reais} sem)")
+    print(f"{SAIDA_MD.name}: gerado a partir do mesmo dado")
 
 
 if __name__ == "__main__":
