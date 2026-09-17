@@ -3,7 +3,7 @@
     "moeda": "BRL",
     "destino": "REC",
     "evento": "ENEJ 27",
-    "atualizado_em": "2026-09-15",
+    "atualizado_em": "2026-09-17",
     "fonte": "tools/gerar_cotacoes.py",
     "fontes": [
       {
@@ -494,6 +494,15 @@
         "airportFare": 23.0
       },
       "transitWhat": "4 embarques de ônibus/metrô + 1 Uber noturno dividido entre 4",
+      "airbnb": {
+        "night": 200,
+        "capacity": 6,
+        "listing": "Golden Shopping Home Service Apt 608 (27 m², até 6 pessoas)",
+        "what": "apartamento simples dividido entre a delegação",
+        "fonte": "cozycozy (agregador de aluguel por temporada)",
+        "url": "https://www.cozycozy.com/br/aluguel-temporada-boa-viagem",
+        "conferido_em": "2026-09-17"
+      },
       "hospOrigem": "estimado"
     },
     {
@@ -518,6 +527,15 @@
         "airportFare": 23.0
       },
       "transitWhat": "2 embarques de ônibus + 1 corrida de Uber por dia",
+      "airbnb": {
+        "night": 302,
+        "capacity": 4,
+        "listing": "Flat Perto do Mar de Boa Viagem (1 quarto, até 4 pessoas)",
+        "what": "flat perto da praia dividido entre a delegação",
+        "fonte": "cozycozy (agregador de aluguel por temporada)",
+        "url": "https://www.cozycozy.com/br/aluguel-temporada-boa-viagem",
+        "conferido_em": "2026-09-17"
+      },
       "hospOrigem": "estimado"
     },
     {
@@ -542,6 +560,15 @@
         "airportFare": 23.0
       },
       "transitWhat": "2 corridas de Uber por dia, sem transporte público",
+      "airbnb": {
+        "night": 378,
+        "capacity": 2,
+        "listing": "Comfortable Studio in Boa Viagem (2 hóspedes)",
+        "what": "studio para dois, mais espaço por pessoa",
+        "fonte": "cozycozy (agregador de aluguel por temporada)",
+        "url": "https://www.cozycozy.com/br/aluguel-temporada-boa-viagem",
+        "conferido_em": "2026-09-17"
+      },
       "hospOrigem": "estimado"
     }
   ]

@@ -377,6 +377,19 @@ main{max-width:1180px;margin:-30px auto 0;padding:0 24px;position:relative;z-ind
 .venue-btn.active{border-color:var(--green-bright);background:var(--green-soft);}
 .venue-btn.active .v-name,.venue-btn.active .v-meta{color:var(--green);}
 
+.hosp-toggle{display:flex;gap:8px;flex-wrap:wrap;}
+.hosp-btn{
+  font-family:var(--font-body);cursor:pointer;text-align:left;
+  border:1.5px solid var(--line);background:var(--surface-sunk);color:var(--ink);
+  border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:2px;flex:1 1 180px;
+  transition:border-color .15s ease, background .15s ease;
+}
+.hosp-btn:hover{border-color:var(--blue);}
+.hosp-btn .h-name{font-weight:600;font-size:13.5px;}
+.hosp-btn .h-meta{font-size:11.5px;color:var(--muted);}
+.hosp-btn.active{border-color:var(--blue);background:var(--blue-soft);}
+.hosp-btn.active .h-name,.hosp-btn.active .h-meta{color:var(--blue);}
+
 .group-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .stepper{
   display:inline-flex;align-items:stretch;border:1.5px solid var(--line);
@@ -611,6 +624,15 @@ footer code{
             <div class="venue-grid" id="venueGrid" role="group" aria-label="Sede do evento"></div>
           </div>
 
+          <!-- TIPO DE HOSPEDAGEM -->
+          <div class="control-block">
+            <div class="section-head">
+              <h2>Tipo de hospedagem</h2>
+            </div>
+            <p class="hint">No Airbnb o apartamento tem preço fixo por noite: quanto maior a delegação, menor o custo por pessoa. Em hotel e hostel a diária já é individual.</p>
+            <div class="hosp-toggle" id="hospToggle" role="group" aria-label="Tipo de hospedagem"></div>
+          </div>
+
           <!-- TAMANHO DA DELEGACAO -->
           <div class="control-block">
             <div class="section-head">
@@ -767,6 +789,7 @@ let DATA = null;            // preenchido por loadDynamicData()
 let selected = null;        // UF escolhida
 let selectedVenue = VENUES[0];
 let groupSize = 1;
+let hospTipo = "hotel";   // "hotel" (hotel/hostel) | "airbnb"
 let dataSource = "loading"; // "api" | "simulado" | "loading"
 
 const COST_FILTERS = [
@@ -837,7 +860,7 @@ const FALLBACK_PAYLOAD = {
     "moeda": "BRL",
     "destino": "REC",
     "evento": "ENEJ 27",
-    "atualizado_em": "2026-09-15",
+    "atualizado_em": "2026-09-17",
     "fonte": "tools/gerar_cotacoes.py",
     "fontes": [
       {
@@ -1328,6 +1351,15 @@ const FALLBACK_PAYLOAD = {
         "airportFare": 23.0
       },
       "transitWhat": "4 embarques de ônibus/metrô + 1 Uber noturno dividido entre 4",
+      "airbnb": {
+        "night": 200,
+        "capacity": 6,
+        "listing": "Golden Shopping Home Service Apt 608 (27 m², até 6 pessoas)",
+        "what": "apartamento simples dividido entre a delegação",
+        "fonte": "cozycozy (agregador de aluguel por temporada)",
+        "url": "https://www.cozycozy.com/br/aluguel-temporada-boa-viagem",
+        "conferido_em": "2026-09-17"
+      },
       "hospOrigem": "estimado"
     },
     {
@@ -1352,6 +1384,15 @@ const FALLBACK_PAYLOAD = {
         "airportFare": 23.0
       },
       "transitWhat": "2 embarques de ônibus + 1 corrida de Uber por dia",
+      "airbnb": {
+        "night": 302,
+        "capacity": 4,
+        "listing": "Flat Perto do Mar de Boa Viagem (1 quarto, até 4 pessoas)",
+        "what": "flat perto da praia dividido entre a delegação",
+        "fonte": "cozycozy (agregador de aluguel por temporada)",
+        "url": "https://www.cozycozy.com/br/aluguel-temporada-boa-viagem",
+        "conferido_em": "2026-09-17"
+      },
       "hospOrigem": "estimado"
     },
     {
@@ -1376,6 +1417,15 @@ const FALLBACK_PAYLOAD = {
         "airportFare": 23.0
       },
       "transitWhat": "2 corridas de Uber por dia, sem transporte público",
+      "airbnb": {
+        "night": 378,
+        "capacity": 2,
+        "listing": "Comfortable Studio in Boa Viagem (2 hóspedes)",
+        "what": "studio para dois, mais espaço por pessoa",
+        "fonte": "cozycozy (agregador de aluguel por temporada)",
+        "url": "https://www.cozycozy.com/br/aluguel-temporada-boa-viagem",
+        "conferido_em": "2026-09-17"
+      },
       "hospOrigem": "estimado"
     }
   ]
@@ -1448,6 +1498,7 @@ function normalize(json){
         hospNight:n(t.hospNight), hospWhat:t.hospWhat || "",
         hospOrigem:t.hospOrigem || "estimado", hospConferido:t.hospConferido || "",
         hotelFilter:t.hotelFilter || "",
+        airbnb:t.airbnb || null,
         meals, mealsDay, mealsWhat:t.mealsWhat || "",
         transit:tr, busDay, uberDay, transitDay, transitFixed,
         transitWhat:t.transitWhat || "",
@@ -1526,6 +1577,47 @@ function selo(origem, conferido){
            "dado real" + (quando ? " · " + quando : "") + "</span>";
   }
   return '<span class="selo est" title="Estimativa sem cotação por trás">estimativa</span>';
+}
+
+/* Busca no Airbnb em Boa Viagem, nas datas do evento, para o tamanho do grupo. */
+function airbnbUrl(tier){
+  const hospedes = Math.min(groupSize, tier.airbnb ? tier.airbnb.capacity : 1);
+  return "https://www.airbnb.com.br/s/Boa-Viagem--Recife--PE/homes" +
+         "?checkin=" + EVENT.departISO + "&checkout=" + EVENT.returnISO +
+         "&adults=" + Math.max(hospedes, 1);
+}
+
+/* Hospedagem por pessoa, conforme o tipo escolhido.
+
+   Hotel/hostel: a diaria JA e por pessoa (quarto duplo ja vem dividido).
+   Airbnb: o apartamento tem preco fixo por noite ate a capacidade, entao o
+   custo por pessoa cai conforme a delegacao cresce. Grupo maior que a
+   capacidade aluga mais de um apartamento — dividir pela capacidade continua
+   correto. */
+function hospedagemDe(tier){
+  if (hospTipo === "airbnb" && tier.airbnb){
+    const ab = tier.airbnb;
+    const divisores = Math.min(Math.max(groupSize, 1), ab.capacity);
+    const porNoite = ab.night / divisores;
+    return {
+      total: Math.round(porNoite * EVENT.nights),
+      porNoite: porNoite,
+      origem: "observado",
+      conferido: ab.fonte + ", " + ab.conferido_em,
+      math: fmt(ab.night) + "/noite ÷ " + divisores +
+            (divisores === 1 ? " pessoa" : " pessoas") + " = " + fmt(porNoite) +
+            "/noite × " + EVENT.nights + " · " + ab.what,
+      link: [[airbnbUrl(tier), "buscar no Airbnb"], [ab.url, "fonte do preço"]]
+    };
+  }
+  return {
+    total: tier.hosp,
+    porNoite: tier.hospNight,
+    origem: tier.hospOrigem,
+    conferido: tier.hospConferido,
+    math: EVENT.nights + " × " + fmt(tier.hospNight) + "/noite · " + tier.hospWhat,
+    link: [[hotelsUrl(tier), "Booking"]]
+  };
 }
 
 /* Transporte interno de um cenario numa sede:
@@ -1698,6 +1790,31 @@ function renderVenues(){
   });
 }
 
+const TIPOS_HOSP = [
+  { id:"hotel",  nome:"Hotel / hostel", meta:"diária já por pessoa" },
+  { id:"airbnb", nome:"Airbnb",         meta:"apartamento dividido pelo grupo" }
+];
+
+function renderHospToggle(){
+  const wrap = document.getElementById("hospToggle");
+  wrap.innerHTML = "";
+
+  TIPOS_HOSP.forEach(t => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "hosp-btn" + (t.id === hospTipo ? " active" : "");
+    btn.setAttribute("aria-pressed", t.id === hospTipo ? "true" : "false");
+    btn.innerHTML = '<span class="h-name">' + t.nome + "</span>" +
+                    '<span class="h-meta">' + t.meta + "</span>";
+    btn.addEventListener("click", () => {
+      hospTipo = t.id;
+      renderHospToggle();
+      renderTiers();
+    });
+    wrap.appendChild(btn);
+  });
+}
+
 function renderVenueBadge(){
   document.getElementById("venueBadge").innerHTML =
     "Sede simulada: <b>" + selectedVenue.name + "</b>";
@@ -1842,6 +1959,7 @@ function renderTiers(){
     // O deslocamento diário varia com a distância da sede; o traslado do
     // aeroporto entra fixo. Ver internoDe().
     const interno = internoDe(tier, selectedVenue);
+    const hosp = hospedagemDe(tier);
 
     const src = (url, txt) => ' <a class="line-src" href="' + url +
                               '" target="_blank" rel="noopener">' + txt + ' &#8599;</a>';
@@ -1861,10 +1979,9 @@ function renderTiers(){
             (selected.fonteUrl ? src(selected.fonteUrl, "fonte do dado") : "") },
 
       { key:"hosp", label:"Hospedagem (" + EVENT.nights + " noites)",
-        value:tier.hosp, display: fmt(tier.hosp),
-        math: selo(tier.hospOrigem, tier.hospConferido) + " " +
-              EVENT.nights + " × " + fmt(tier.hospNight) + "/noite · " + tier.hospWhat +
-              src(hotelsUrl(tier), "Booking") },
+        value:hosp.total, display: fmt(hosp.total),
+        math: selo(hosp.origem, hosp.conferido) + " " + hosp.math +
+              hosp.link.map(l => src(l[0], l[1])).join("") },
 
       { key:"alim", label:"Alimentação (" + EVENT.days + " dias)",
         value:tier.alim, display: fmt(tier.alim),
@@ -2021,6 +2138,7 @@ async function init(){
   renderDataBadge();
   renderVenues();
   renderVenueBadge();
+  renderHospToggle();
   renderFilterChips();
   renderLoading();
 

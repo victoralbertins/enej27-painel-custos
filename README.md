@@ -106,7 +106,7 @@ sobrepõe a estatística de 12 meses.
 nacional da ANAC (2 × R$ 632,53 por trecho, mai/2026) — coerente com rotas que terminam no
 Nordeste.
 
-Alimentação, transporte intraurbano e diárias de hostel seguem como estimativa; a seção 3
+Alimentação, transporte intraurbano e diárias de hostel seguem como estimativa; a seção 4
 do [FONTES.md](FONTES.md) lista cada uma e por quê.
 
 > **Limite honesto:** o ambiente de teste da Amadeus é gratuito mas tem cobertura parcial
@@ -156,7 +156,11 @@ Sua query no BigQuery deve devolver exatamente este shape:
       "mealsWhat": "padaria, prato feito e lanche à noite",
       "transit": { "busRides": 4, "busFare": 4.50, "uberRides": 1, "uberFare": 7.00,
                    "airportRides": 2, "airportFare": 23.00 },
-      "transitWhat": "4 embarques de ônibus/metrô + 1 Uber noturno dividido entre 4" }
+      "transitWhat": "4 embarques de ônibus/metrô + 1 Uber noturno dividido entre 4",
+      "airbnb": { "night": 200, "capacity": 6,
+                  "listing": "Golden Shopping Home Service Apt 608 (27 m², até 6 pessoas)",
+                  "what": "apartamento simples dividido entre a delegação",
+                  "fonte": "cozycozy", "url": "https://...", "conferido_em": "2026-09-17" } }
   ]
 }
 ```
@@ -169,6 +173,9 @@ Sua query no BigQuery deve devolver exatamente este shape:
   `estimado` (sem lastro). Define o selo de procedência na interface.
 - `searchIata`: código usado nos links de busca — metropolitano onde existe (SAO, RIO, BHZ).
 - `host: true`: federação anfitriã (PE) — zera o custo aéreo.
+- `airbnb`: opcional. `night` é a diária do **apartamento inteiro** e `capacity` o número
+  de hóspedes; o painel divide pelo tamanho do grupo. Sem esse bloco, o cenário só oferece
+  hotel/hostel.
 - Os cenários são descritos por **valor unitário**, não por total fechado. `normalize()`
   multiplica pelas noites/dias do `EVENT`, e é isso que permite mostrar a memória de
   cálculo na tela. Se você mandar `hosp`, `alim` ou `interno` já fechados, eles vencem.
@@ -179,6 +186,26 @@ Sua query no BigQuery deve devolver exatamente este shape:
 **Passagem e hospedagem** vêm de busca externa, e cada linha do cenário traz o link já
 preenchido com origem, destino e datas: Google Flights e Kayak para o voo, Booking para a
 hospedagem (filtrado por `hotelFilter` — hostel, 3★ ou 4★).
+
+**Hospedagem tem dois modos**, selecionáveis no painel:
+
+```
+hotel/hostel  →  diária já por pessoa × 5 pernoites
+airbnb        →  diária do apartamento ÷ min(grupo, capacidade) × 5 pernoites
+```
+
+O Airbnb é o único custo que **cai com o tamanho da delegação** — o apartamento custa o
+mesmo com 1 ou 6 pessoas dentro. Grupo maior que a capacidade aluga mais de um
+apartamento, então dividir pela capacidade continua correto.
+
+| Cenário | Airbnb | Capacidade | Por pessoa (1) | (4) | (6) |
+|---|---|---|---|---|---|
+| Econômico | R$ 200/noite | 6 | R$ 1.000 | R$ 250 | R$ 167 |
+| Intermediário | R$ 302/noite | 4 | R$ 1.510 | R$ 378 | R$ 378 |
+| Conforto | R$ 378/noite | 2 | R$ 1.890 | R$ 945 | R$ 945 |
+
+Totais de 5 pernoites. Para comparar: o hotel/hostel do Econômico fica em R$ 425 fixos,
+então o Airbnb passa a compensar a partir de ~3 pessoas.
 
 **Alimentação** — três refeições por dia, sem desconto por grupo:
 

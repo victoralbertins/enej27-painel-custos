@@ -59,7 +59,29 @@ valores com preço datado, e a linha passa a exibir *cotação datada*.
 
 ---
 
-## 2. Demais valores com fonte
+## 2. Hospedagem via Airbnb
+
+O Airbnb entra como **alternativa** ao hotel/hostel, selecionável no painel. A lógica é
+diferente: o apartamento tem preço fixo por noite até a capacidade, então o custo por
+pessoa cai conforme a delegação cresce.
+
+| Cenário | Anúncio | Diária | Capacidade | Por pessoa se lotado |
+|---|---|---|---|---|
+| Econômico | Golden Shopping Home Service Apt 608 (27 m², até 6 pessoas) | R$ 200 | 6 pessoas | R$ 33 |
+| Intermediário | Flat Perto do Mar de Boa Viagem (1 quarto, até 4 pessoas) | R$ 302 | 4 pessoas | R$ 76 |
+| Conforto | Comfortable Studio in Boa Viagem (2 hóspedes) | R$ 378 | 2 pessoas | R$ 189 |
+
+Fonte: [cozycozy (agregador de aluguel por temporada)](https://www.cozycozy.com/br/aluguel-temporada-boa-viagem), consultado em 2026-09-17.
+
+> **Ressalva sobre a fonte.** O Airbnb não publica preço sem uma busca com datas, então
+> não é indexável. Os valores vêm do cozycozy, agregador que lista aluguel por temporada de
+> várias plataformas — os anúncios podem estar no Airbnb, no Booking ou em ambos. São
+> preços reais de anúncios reais, mas não saíram da API do Airbnb. O painel leva ao
+> Airbnb com as datas e o tamanho do grupo já preenchidos, para conferir.
+
+---
+
+## 3. Demais valores com fonte
 
 | Categoria | Item | Valor | Fonte | Onde conferir |
 |---|---|---|---|---|
@@ -78,7 +100,7 @@ valores com preço datado, e a linha passa a exibir *cotação datada*.
 
 ---
 
-## 3. Sem fonte — use com ceticismo
+## 4. Sem fonte — use com ceticismo
 
 Estes números **não** foram verificados. São julgamento de mercado, e o painel os marca
 como estimativa.
@@ -98,7 +120,7 @@ como estimativa.
 
 ---
 
-## 4. Hipóteses de trabalho
+## 5. Hipóteses de trabalho
 
 | Item | Adotado | Situação |
 |---|---|---|
@@ -110,7 +132,7 @@ como estimativa.
 
 ---
 
-## 5. Aferição
+## 6. Aferição
 
 A média de ida e volta da tabela está em **R$ 1,300**, ou **+3%**
 sobre a média nacional da ANAC de R$ 1,265 (2 × R$ 632.53 por trecho, mai/2026).
@@ -129,7 +151,7 @@ nessa origem, que o ônibus custa a partir de R$ 27 por trecho.
 
 ---
 
-## 6. O que fecharia as lacunas
+## 7. O que fecharia as lacunas
 
 - **Passagens com data e hotéis:** o [pipeline da Amadeus](README.md#cotações-automáticas)
   — falta cadastrar as credenciais.

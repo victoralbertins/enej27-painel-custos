@@ -153,6 +153,26 @@ def linhas_voos(dados):
         ]
 
 
+def linhas_airbnb(dados):
+    """Uma linha por cenário, a partir do bloco airbnb do próprio payload."""
+    for t in dados["tiers"]:
+        ab = t.get("airbnb")
+        if not ab:
+            continue
+        yield [
+            "Hospedagem (Airbnb)",
+            f"{t['name']} — {ab['listing']}",
+            ab["night"],
+            "BRL por noite (apartamento inteiro)",
+            "dado real",
+            ab["fonte"],
+            ab["url"],
+            ab["conferido_em"],
+            f"capacidade {ab['capacity']} pessoas; o painel divide pelo tamanho do grupo "
+            f"(R$ {round(ab['night']/ab['capacity'])}/pessoa se lotado)",
+        ]
+
+
 def tabela_md(cabecalho, linhas):
     out = ["| " + " | ".join(cabecalho) + " |",
            "|" + "|".join("---" for _ in cabecalho) + "|"]
@@ -193,6 +213,7 @@ def escrever_md(dados, linhas_voo, anac_rt, media_rt):
                f"{desvio:+.0f}%. No agregado das {len(stats)} rotas, o meio da faixa "
                f"fica **{agregado:+.0f}%** acima da média observada")
 
+    airbnb = list(linhas_airbnb(dados))
     com_fonte = [o for o in OUTROS if o[4] in ("dado real", "cotação datada")
                  and o[0] != "Evento"]
     sem_fonte = [o for o in OUTROS if o[4] == "estimativa"]
@@ -231,14 +252,35 @@ valores com preço datado, e a linha passa a exibir *cotação datada*.
 
 ---
 
-## 2. Demais valores com fonte
+## 2. Hospedagem via Airbnb
+
+O Airbnb entra como **alternativa** ao hotel/hostel, selecionável no painel. A lógica é
+diferente: o apartamento tem preço fixo por noite até a capacidade, então o custo por
+pessoa cai conforme a delegação cresce.
+
+{tabela_md(["Cenário", "Anúncio", "Diária", "Capacidade", "Por pessoa se lotado"],
+           [[a[1].split(" — ")[0], a[1].split(" — ")[1], f"R$ {a[2]}",
+             a[8].split(" ")[1] + " pessoas",
+             "R$ " + a[8].split("R$ ")[1].split("/")[0]] for a in airbnb])}
+
+Fonte: [{airbnb[0][5]}]({airbnb[0][6]}), consultado em {airbnb[0][7]}.
+
+> **Ressalva sobre a fonte.** O Airbnb não publica preço sem uma busca com datas, então
+> não é indexável. Os valores vêm do cozycozy, agregador que lista aluguel por temporada de
+> várias plataformas — os anúncios podem estar no Airbnb, no Booking ou em ambos. São
+> preços reais de anúncios reais, mas não saíram da API do Airbnb. O painel leva ao
+> Airbnb com as datas e o tamanho do grupo já preenchidos, para conferir.
+
+---
+
+## 3. Demais valores com fonte
 
 {tabela_md(["Categoria", "Item", "Valor", "Fonte", "Onde conferir"],
            [[o[0], o[1], o[2], o[5], f"[↗]({o[6]})" if o[6] else "—"] for o in com_fonte])}
 
 ---
 
-## 3. Sem fonte — use com ceticismo
+## 4. Sem fonte — use com ceticismo
 
 Estes números **não** foram verificados. São julgamento de mercado, e o painel os marca
 como estimativa.
@@ -248,7 +290,7 @@ como estimativa.
 
 ---
 
-## 4. Hipóteses de trabalho
+## 5. Hipóteses de trabalho
 
 | Item | Adotado | Situação |
 |---|---|---|
@@ -260,7 +302,7 @@ como estimativa.
 
 ---
 
-## 5. Aferição
+## 6. Aferição
 
 A média de ida e volta da tabela está em **R$ {media_rt:,.0f}**, ou **{media_rt/anac_rt*100-100:+.0f}%**
 sobre a média nacional da ANAC de R$ {anac_rt:,.0f} (2 × R$ {anac_rt/2:,.2f} por trecho, mai/2026).
@@ -279,7 +321,7 @@ nessa origem, que o ônibus custa a partir de R$ 27 por trecho.
 
 ---
 
-## 6. O que fecharia as lacunas
+## 7. O que fecharia as lacunas
 
 - **Passagens com data e hotéis:** o [pipeline da Amadeus](README.md#cotações-automáticas)
   — falta cadastrar as credenciais.
@@ -293,7 +335,7 @@ nessa origem, que o ônibus custa a partir de R$ 27 por trecho.
 def main():
     dados = json.loads(ENTRADA.read_text(encoding="utf-8"))
     linhas_voo = list(linhas_voos(dados))
-    linhas = linhas_voo + [list(o) for o in OUTROS]
+    linhas = linhas_voo + list(linhas_airbnb(dados)) + [list(o) for o in OUTROS]
 
     with open(SAIDA_CSV, "w", encoding="utf-8-sig", newline="") as f:
         w = csv.writer(f, delimiter=";")

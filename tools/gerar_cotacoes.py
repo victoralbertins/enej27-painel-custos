@@ -6,25 +6,20 @@ fallback, para as duas fontes nunca divergirem.
     python tools/gerar_cotacoes.py
 
 -------------------------------------------------------------------------------
-COMO AS PASSAGENS SÃO CALIBRADAS
+DE ONDE VÊM OS PREÇOS
 
-O modelo base (BASE_VOO) é uma estimativa por distância/mercado. Sozinho ele
-erra — e erra para baixo, como ficou claro quando a primeira cotação real foi
-conferida (São Paulo, Kayak: R$ 1.154 contra R$ 760 estimados).
+Não há modelo estimado nas passagens. COTACOES traz, para cada uma das 26
+origens, a estatística real da rota publicada pelo Kayak (faixa típica, média e
+menor preço dos últimos 12 meses), levantada em 15/09/2026.
 
-Por isso existe OBSERVACOES_VOO: cada linha é uma cotação conferida na fonte,
-com data. A partir dela o script faz duas coisas:
+Precedência, da melhor fonte para a pior:
 
-  1. a rota observada passa a valer o número REAL, não a estimativa;
-  2. todas as outras rotas são multiplicadas pelo fator médio entre o que foi
-     observado e o que o modelo previa — hoje 1,52.
+  1. cotação DATADA para as datas do evento — vem de OBSERVACOES_MANUAIS ou da
+     busca automática da Amadeus (data/observacoes.json);
+  2. estatística de 12 meses da rota — o padrão.
 
-Confira mais rotas, adicione aqui e rode de novo: cada cotação nova melhora a
-tabela inteira, e as rotas observadas param de ser chute.
-
-PARA PLUGAR O BIGQUERY: troque BASE_VOO por uma query e mantenha o shape de
-saída. A calibração deixa de ser necessária quando os preços vierem de uma
-fonte real de cotação.
+PARA PLUGAR O BIGQUERY: troque COTACOES por uma query e mantenha o shape de
+saída. O painel não precisa saber de onde veio.
 -------------------------------------------------------------------------------
 """
 
@@ -187,6 +182,39 @@ def url_kayak_rota(uf):
 
 
 # ---------------------------------------------------------------------------
+# AIRBNB — anúncios reais em Boa Viagem, levantados no cozycozy em 17/09/2026.
+#
+# A lógica é diferente da do hotel: o apartamento tem um preço por noite
+# INDEPENDENTE de quantas pessoas dormem nele, até a capacidade. Então o custo
+# por pessoa cai conforme a delegação cresce — e é o painel que faz essa conta,
+# usando o tamanho do grupo:
+#
+#     por pessoa = diaria / min(tamanho do grupo, capacidade)
+#
+# Por isso guardamos diaria + capacidade, e não um valor por pessoa.
+# ---------------------------------------------------------------------------
+AIRBNB = {
+    "econ": {
+        "night": 200, "capacity": 6,
+        "listing": "Golden Shopping Home Service Apt 608 (27 m², até 6 pessoas)",
+        "what": "apartamento simples dividido entre a delegação",
+    },
+    "inter": {
+        "night": 302, "capacity": 4,
+        "listing": "Flat Perto do Mar de Boa Viagem (1 quarto, até 4 pessoas)",
+        "what": "flat perto da praia dividido entre a delegação",
+    },
+    "conforto": {
+        "night": 378, "capacity": 2,
+        "listing": "Comfortable Studio in Boa Viagem (2 hóspedes)",
+        "what": "studio para dois, mais espaço por pessoa",
+    },
+}
+AIRBNB_FONTE = "cozycozy (agregador de aluguel por temporada)"
+AIRBNB_URL = "https://www.cozycozy.com/br/aluguel-temporada-boa-viagem"
+AIRBNB_EM = "2026-09-17"
+
+# ---------------------------------------------------------------------------
 # CENÁRIOS DE GASTO — valores unitários; o painel fecha os totais.
 #
 # hospNight revisado para Boa Viagem em agosto. ATENÇÃO: diferente das
@@ -303,6 +331,15 @@ def montar_cenarios(hoteis):
     cenarios = []
     for c in CENARIOS:
         c = {**c, "meals": dict(c["meals"]), "transit": dict(c["transit"])}
+        ab = AIRBNB.get(c["key"])
+        if ab:
+            c["airbnb"] = {
+                **ab,
+                "fonte": AIRBNB_FONTE,
+                "url": AIRBNB_URL,
+                "conferido_em": AIRBNB_EM,
+            }
+
         obs = hoteis.get(c["key"])
         if obs and obs.get("diaria"):
             c["hospNight"] = obs["diaria"]
