@@ -65,11 +65,21 @@ O Airbnb entra como **alternativa** ao hotel/hostel, selecionável no painel. A 
 diferente: o apartamento tem preço fixo por noite até a capacidade, então o custo por
 pessoa cai conforme a delegação cresce.
 
-| Cenário | Anúncio | Diária | Capacidade | Por pessoa se lotado |
+Os 7 anúncios levantados, do mais barato ao mais caro. Os três **adotados**
+são os que o painel usa; os demais ficam registrados para a escolha ser auditável.
+
+| Anúncio | Diária | Capacidade | Por pessoa se lotado | Adotado em |
 |---|---|---|---|---|
-| Econômico | Golden Shopping Home Service Apt 608 (27 m², até 6 pessoas) | R$ 200 | 6 pessoas | R$ 33 |
-| Intermediário | Flat Perto do Mar de Boa Viagem (1 quarto, até 4 pessoas) | R$ 302 | 4 pessoas | R$ 76 |
-| Conforto | Comfortable Studio in Boa Viagem (2 hóspedes) | R$ 378 | 2 pessoas | R$ 189 |
+| Boa Viagem Flats Apto 201 (1 quarto, 34 m²) | R$ 194 | 3 pessoas | R$ 65 | — |
+| Golden Shopping Home Service Apt 608 (27 m²) | R$ 200 | 6 pessoas | R$ 33 | **Econômico** |
+| Flat Imperial Suites | R$ 219 | 5 pessoas | R$ 44 | — |
+| Apart Hotel Navegantes Boa Viagem (30 m²) | R$ 233 | não declarada | — | — |
+| Edf. Costa do Rio (1 quarto, 1 banheiro, 28 m²) | R$ 238 | não declarada | — | — |
+| Flat Perto do Mar de Boa Viagem (1 quarto) | R$ 302 | 4 pessoas | R$ 76 | **Intermediário** |
+| Comfortable Studio in Boa Viagem | R$ 378 | 2 pessoas | R$ 189 | **Conforto** |
+
+Panorama que a própria busca publica: econômico R$ 194-238, médio
+R$ 250-400, premium acima de R$ 1.000.
 
 Fonte: [cozycozy (agregador de aluguel por temporada)](https://www.cozycozy.com/br/aluguel-temporada-boa-viagem), consultado em 2026-09-17.
 

@@ -154,23 +154,55 @@ def linhas_voos(dados):
 
 
 def linhas_airbnb(dados):
-    """Uma linha por cenário, a partir do bloco airbnb do próprio payload."""
-    for t in dados["tiers"]:
-        ab = t.get("airbnb")
-        if not ab:
-            continue
+    """O levantamento INTEIRO de Airbnb, não só os anúncios adotados.
+
+    Registrar os descartados torna a escolha auditável: dá para ver qual era a
+    alternativa e por que ela não entrou."""
+    pa = dados["meta"].get("pesquisa_airbnb")
+    if not pa:
+        return
+
+    nomes = {t["key"]: t["name"] for t in dados["tiers"]}
+
+    for a in pa["anuncios"]:
+        cap = a["capacity"]
+        usado = a["usado_em"]
+
+        if usado:
+            obs = (f"ADOTADO no cenário {nomes.get(usado, usado)}. "
+                   f"Capacidade {cap} pessoas; o painel divide pelo tamanho do grupo "
+                   f"(R$ {round(a['night'] / cap)}/pessoa se lotado)")
+        elif cap:
+            obs = (f"levantado na pesquisa, não adotado. Capacidade {cap} pessoas "
+                   f"(R$ {round(a['night'] / cap)}/pessoa se lotado)")
+        else:
+            obs = "levantado na pesquisa, não adotado. Anúncio não declara a lotação"
+
         yield [
             "Hospedagem (Airbnb)",
-            f"{t['name']} — {ab['listing']}",
-            ab["night"],
+            a["listing"],
+            a["night"],
             "BRL por noite (apartamento inteiro)",
             "dado real",
-            ab["fonte"],
-            ab["url"],
-            ab["conferido_em"],
-            f"capacidade {ab['capacity']} pessoas; o painel divide pelo tamanho do grupo "
-            f"(R$ {round(ab['night']/ab['capacity'])}/pessoa se lotado)",
+            pa["fonte"],
+            pa["url"],
+            pa["conferido_em"],
+            obs,
         ]
+
+    # Panorama de faixas que a própria busca publica.
+    f = pa["faixas"]
+    yield [
+        "Hospedagem (Airbnb)",
+        "Panorama de preços em Boa Viagem",
+        f"econômico {f['economico']}; médio {f['medio']}; premium {f['premium']}",
+        "BRL por noite",
+        "dado real",
+        pa["fonte"],
+        pa["url"],
+        pa["conferido_em"],
+        f"faixas do filtro do site: {f['filtro_do_site']}",
+    ]
 
 
 def tabela_md(cabecalho, linhas):
@@ -213,7 +245,9 @@ def escrever_md(dados, linhas_voo, anac_rt, media_rt):
                f"{desvio:+.0f}%. No agregado das {len(stats)} rotas, o meio da faixa "
                f"fica **{agregado:+.0f}%** acima da média observada")
 
-    airbnb = list(linhas_airbnb(dados))
+    pa = dados["meta"].get("pesquisa_airbnb", {})
+    anuncios = pa.get("anuncios", [])
+    nomes_tier = {t["key"]: t["name"] for t in dados["tiers"]}
     com_fonte = [o for o in OUTROS if o[4] in ("dado real", "cotação datada")
                  and o[0] != "Evento"]
     sem_fonte = [o for o in OUTROS if o[4] == "estimativa"]
@@ -258,12 +292,21 @@ O Airbnb entra como **alternativa** ao hotel/hostel, selecionável no painel. A 
 diferente: o apartamento tem preço fixo por noite até a capacidade, então o custo por
 pessoa cai conforme a delegação cresce.
 
-{tabela_md(["Cenário", "Anúncio", "Diária", "Capacidade", "Por pessoa se lotado"],
-           [[a[1].split(" — ")[0], a[1].split(" — ")[1], f"R$ {a[2]}",
-             a[8].split(" ")[1] + " pessoas",
-             "R$ " + a[8].split("R$ ")[1].split("/")[0]] for a in airbnb])}
+Os {len(anuncios)} anúncios levantados, do mais barato ao mais caro. Os três **adotados**
+são os que o painel usa; os demais ficam registrados para a escolha ser auditável.
 
-Fonte: [{airbnb[0][5]}]({airbnb[0][6]}), consultado em {airbnb[0][7]}.
+{tabela_md(["Anúncio", "Diária", "Capacidade", "Por pessoa se lotado", "Adotado em"],
+           [[a["listing"],
+             f"R$ {a['night']}",
+             f"{a['capacity']} pessoas" if a["capacity"] else "não declarada",
+             f"R$ {round(a['night'] / a['capacity'])}" if a["capacity"] else "—",
+             f"**{nomes_tier.get(a['usado_em'], a['usado_em'])}**" if a["usado_em"] else "—"]
+            for a in anuncios])}
+
+Panorama que a própria busca publica: econômico {pa['faixas']['economico']}, médio
+{pa['faixas']['medio']}, premium {pa['faixas']['premium']}.
+
+Fonte: [{pa['fonte']}]({pa['url']}), consultado em {pa['conferido_em']}.
 
 > **Ressalva sobre a fonte.** O Airbnb não publica preço sem uma busca com datas, então
 > não é indexável. Os valores vêm do cozycozy, agregador que lista aluguel por temporada de

@@ -193,6 +193,37 @@ def url_kayak_rota(uf):
 #
 # Por isso guardamos diaria + capacidade, e não um valor por pessoa.
 # ---------------------------------------------------------------------------
+# Levantamento COMPLETO: todos os anúncios vistos na busca, não só os três que
+# o painel usa. Fica registrado para a escolha ser auditável — dá para ver o que
+# foi descartado e por quê.
+#
+#   usado_em = chave do cenário que adotou o anúncio, ou None
+#   capacity = None quando o anúncio não declara a lotação
+PESQUISA_AIRBNB = [
+    {"listing": "Boa Viagem Flats Apto 201 (1 quarto, 34 m²)",
+     "night": 194, "capacity": 3, "usado_em": None},
+    {"listing": "Golden Shopping Home Service Apt 608 (27 m²)",
+     "night": 200, "capacity": 6, "usado_em": "econ"},
+    {"listing": "Flat Imperial Suites",
+     "night": 219, "capacity": 5, "usado_em": None},
+    {"listing": "Apart Hotel Navegantes Boa Viagem (30 m²)",
+     "night": 233, "capacity": None, "usado_em": None},
+    {"listing": "Edf. Costa do Rio (1 quarto, 1 banheiro, 28 m²)",
+     "night": 238, "capacity": None, "usado_em": None},
+    {"listing": "Flat Perto do Mar de Boa Viagem (1 quarto)",
+     "night": 302, "capacity": 4, "usado_em": "inter"},
+    {"listing": "Comfortable Studio in Boa Viagem",
+     "night": 378, "capacity": 2, "usado_em": "conforto"},
+]
+
+# Panorama que a própria busca publica, usado para enquadrar os anúncios.
+PESQUISA_AIRBNB_FAIXAS = {
+    "filtro_do_site": "R$ 0-300 · R$ 300-750 · R$ 750+",
+    "economico": "R$ 194-238",
+    "medio": "R$ 250-400",
+    "premium": "acima de R$ 1.000",
+}
+
 AIRBNB = {
     "econ": {
         "night": 200, "capacity": 6,
@@ -364,6 +395,13 @@ def montar_payload():
             "atualizado_em": date.today().isoformat(),
             "fonte": "tools/gerar_cotacoes.py",
             "fontes": FONTES,
+            "pesquisa_airbnb": {
+                "fonte": AIRBNB_FONTE,
+                "url": AIRBNB_URL,
+                "conferido_em": AIRBNB_EM,
+                "faixas": PESQUISA_AIRBNB_FAIXAS,
+                "anuncios": PESQUISA_AIRBNB,
+            },
             "calibracao": {
                 "metodo": "estatistica observada por rota (Kayak, 12 meses)",
                 "levantado_em": LEVANTADO_EM,
