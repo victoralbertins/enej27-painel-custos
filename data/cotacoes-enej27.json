@@ -3,7 +3,7 @@
     "moeda": "BRL",
     "destino": "REC",
     "evento": "ENEJ 27",
-    "atualizado_em": "2026-11-02",
+    "atualizado_em": "2026-11-09",
     "fonte": "tools/gerar_cotacoes.py",
     "fontes": [
       {
